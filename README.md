@@ -1,11 +1,11 @@
 # Proyecto de Simulación Estocástica: AI Plays Poker
 Proyecto del curso MA4402 Simulación Estocástica, AI Plays Poker Grupo 5
 
-Este proyecto busca crear una IA a través de Simulación Estocástica que pueda jugar uniformemente Poker. 
+GD con reinforcement learning y behavioral cloning.
+-Tomás Padilla
+-Nabil Orellana
 
-
-Como ejecutar archivos:
-- Test simple de funciones básicas y clases básicas: python3 -m Tests.test
-- Test completo de las funciones, clases y combinaciones: python3 -m Tests.test_completo
-- El juego de Poker: python3 main.py
-- El juego de Poker con gráfica interactiva: python3 gui.py
+En la carpeta GD_RL están las carpetas red_dual y red mono
+Para red dual ejecutar train_dual.py (Si hay un problema con los path de los .pt poner None)
+Para la mono ejecutar training_loop.py (Ídem con lo de arriba)
+Saludos!
