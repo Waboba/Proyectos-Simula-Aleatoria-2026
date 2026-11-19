@@ -1,0 +1,4 @@
+El código para jugar las partidas y las reglas de Go fue hecho a mano con correcciones guiadas por IA. 
+
+Se utilizo IA para corregir errores, para ayudar a crear los códigos de entrenamiento, revisión de entrenamiento y para que funcione con GPU de manera asíncrona.
+También para hacer recovery.py que sirvió para corregir el primer modelo que estaba atascado
