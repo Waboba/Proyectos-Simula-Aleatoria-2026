@@ -41,4 +41,4 @@ Dentro de los notebooks, los bloques hechos con apoyo de IA están marcados con 
 - CompVis, *latent-diffusion* (repositorio). https://github.com/CompVis/latent-diffusion
 - Karras, T., et al. (2024). *Guiding a Diffusion Model with a Bad Version of Itself* (autoguidance). NVIDIA. NeurIPS 2024. arXiv:2406.02507.
 - Epstein, D., Jabri, A., Poole, B., Efros, A. A., Holynski, A. (2023). *Diffusion Self-Guidance for Controllable Image Generation*. NeurIPS 2023.
-- Kim, D., Kim, Y., Kwon, S. J., Kang, W., Moon, I.-C. (2023). *Refining Generative Process with Discriminator Guidance in Score-based Generative Models*. ICML 2023. — la base de "usar GANs".
+- Kim, D., Kim, Y., Kwon, S. J., Kang, W., Moon, I.-C. (2023). *Refining Generative Process with Discriminator Guidance in Score-based Generative Models*. ICML 2023.
