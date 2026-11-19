@@ -1,216 +1,270 @@
-"""
-Partida interactiva contra IA v4 (MaskablePPO + Lookahead K=6) o simulación
-de demostración frente a la Heurística Táctica con exportación JSON opcional.
+﻿"""Partida en consola contra la IA v4 (MaskablePPO + Lookahead K=6).
 
-Uso:
-  python -m scripts.contra_maquina_ia_v4
-  python -m scripts.contra_maquina_ia_v4 --k 6 --ia-empieza
-  python -m scripts.contra_maquina_ia_v4 --demo-heuristica --json partida_historial.json
+Ejecutar desde la raíz del proyecto:
+    python -m scripts.contra_maquina_ia_v4
+    python -m scripts.contra_maquina_ia_v4 Ana
+    python -m scripts.contra_maquina_ia_v4 Ana 7
+    python -m scripts.contra_maquina_ia_v4 --modelo models_checkpoint/ppo_azul_sintra_v4.zip --k 6
+    python -m scripts.contra_maquina_ia_v4 --demo-heuristica --json partida_historial.json
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import random
+import sys
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from src.azulvitral import AzulVitralGame, Move
-from src.env_azul_v2 import heuristic_move
-from src.env_azul_v4 import AgenteHibridoV4
-
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_MODELO = "models_checkpoint/ppo_azul_sintra_v4.zip"
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from scripts.jugar import avisar, describir, mostrar_turno, pedir_por_consola
+from src.azulvitral import AzulVitralGame, Move, Player
+from src.env_azul_v2 import decode_action, heuristic_move
+from src.env_azul_v3 import AzulSintraEnvV3
+from src.env_azul_v4 import (
+    AgenteHibridoV4,
+    aplicar_jugada_segura,
+    cargar_modelo_maskable_ppo,
+    partida_terminada,
+)
+from src.impresion import print_final, print_game
+
+MAQUINA = "Máquina_v4"
+MODEL_V4_PATH = PROJECT_ROOT / "models_checkpoint" / "ppo_azul_sintra_v4.zip"
+MODEL_V3_PATH = PROJECT_ROOT / "models_checkpoint" / "ppo_azul_sintra_v3.zip"
+MODEL_V2_PATH = PROJECT_ROOT / "models_checkpoint" / "ppo_azul_sintra_v2.zip"
+MODEL_V1_PATH = PROJECT_ROOT / "models_checkpoint" / "ppo_azul_sintra_v1.zip"
 
 
-def _serializar_estado_turno(
-    game: AzulVitralGame,
-    turno: int,
-    actor_idx: int,
-    actor_nombre: str,
-    accion_desc: str,
-) -> Dict[str, Any]:
-    jugadores_data = []
-    for idx, p in enumerate(game.players):
-        jugadores_data.append(
-            {
-                "id": idx,
-                "nombre": actor_nombre if idx == actor_idx else f"Jugador {idx}",
-                "score": int(p.score),
-                "glazier_pos": int(getattr(p, "glazier_pos", 0)),
-                "broken_position": int(getattr(p, "broken_position", 1)),
-            }
+def jugador_al_azar(azar: random.Random):
+    """Rival que elige uniformemente al azar entre las jugadas válidas."""
+
+    def elegir(game: AzulVitralGame, player: Player) -> Move:
+        jugadas = game.legal_moves()
+        jugada = azar.choice(jugadas)
+        print(
+            f"\n{player.name} elige entre {len(jugadas)} jugadas válidas: "
+            f"{describir(jugada)}"
         )
+        return jugada
+
+    return elegir
+
+
+def jugador_heuristico(azar: random.Random):
+    """Rival controlado por la política heurística táctica."""
+
+    def elegir(game: AzulVitralGame, player: Player) -> Move:
+        jugadas = game.legal_moves()
+        jugada = heuristic_move(game, azar)
+        print(
+            f"\n{player.name} (Heurística) elige entre {len(jugadas)} jugadas válidas: "
+            f"{describir(jugada)}"
+        )
+        return jugada
+
+    return elegir
+
+
+def jugador_ia_reactiva(modelo, etiqueta: str = "IA"):
+    """Rival controlado por un checkpoint MaskablePPO en modo reactivo (K=1)."""
+    helper = AzulSintraEnvV3()
+
+    def elegir(game: AzulVitralGame, player: Player) -> Move:
+        helper.game = game
+        helper.agents = ["player_0", "player_1"]
+        helper.terminations = {"player_0": False, "player_1": False}
+        player_idx = next(i for i, p in enumerate(game.players) if p is player)
+        ag = f"player_{player_idx}"
+        helper.agent_selection = ag
+
+        obs_dict = helper.observe(ag)
+        act, _ = modelo.predict(
+            obs_dict["observation"],
+            action_masks=obs_dict["action_mask"].astype(bool),
+            deterministic=True,
+        )
+        jugada = decode_action(int(act))
+        jugadas = game.legal_moves()
+        print(
+            f"\n{player.name} ({etiqueta}) elige entre {len(jugadas)} jugadas válidas: "
+            f"{describir(jugada)}"
+        )
+        return jugada
+
+    return elegir
+
+
+def jugador_ia_v4(agente: AgenteHibridoV4):
+    """Rival controlado por IA v4 (MaskablePPO + 1-ply Lookahead K)."""
+
+    def elegir(game: AzulVitralGame, player: Player) -> Move:
+        player_idx = next(i for i, p in enumerate(game.players) if p is player)
+        jugadas = game.legal_moves()
+        t0 = time.perf_counter()
+        jugada = agente.elegir_jugada(game, player_idx)
+        dt_ms = (time.perf_counter() - t0) * 1000.0
+        print(
+            f"\n{player.name} (IA v4 K={agente.k_lookahead}, {dt_ms:.1f} ms) "
+            f"elige entre {len(jugadas)} jugadas válidas: {describir(jugada)}"
+        )
+        return jugada
+
+    return elegir
+
+
+def _serializar_turno(
+    game: AzulVitralGame, turno: int, actor: Player, jugada: Move
+) -> Dict[str, Any]:
     return {
         "turno": turno,
-        "ronda": int(getattr(game, "round_num", 1)),
-        "jugador_idx": actor_idx,
-        "jugador": actor_nombre,
-        "accion": accion_desc,
-        "jugadores": jugadores_data,
+        "ronda": int(getattr(game, "round_number", getattr(game, "round", 1))),
+        "jugador": actor.name,
+        "accion": describir(jugada),
+        "jugadores": [
+            {
+                "nombre": p.name,
+                "score": int(p.score),
+                "broken_position": int(getattr(p, "broken_position", 1)),
+            }
+            for p in game.players
+        ],
     }
-
-
-def _mostrar_tablero(game: AzulVitralGame, nombres: List[str]) -> None:
-    print("\n" + "=" * 68)
-    ronda = getattr(game, "round_num", "?")
-    print(f"RONDA {ronda} | Marcador -> {nombres[0]}: {game.players[0].score} pts | {nombres[1]}: {game.players[1].score} pts")
-    print("=" * 68)
-
-    for i, fab in enumerate(game.factories):
-        print(f"  Fábrica {i + 1}: {list(fab)}")
-    print(f"  Centro   : {list(game.center)} (Ficha inicial disponible: {getattr(game, 'first_player_token_in_center', False)})")
-
-    for idx, p in enumerate(game.players):
-        print(
-            f"\n[{nombres[idx]}] Puntos: {p.score} | Vidriero en tira: {getattr(p, 'glazier_pos', 0) + 1} "
-            f"| Cristal roto pos: {getattr(p, 'broken_position', 1)}"
-        )
-        for s_idx, strip in enumerate(p.pattern_strips):
-            if strip is not None:
-                print(f"   Tira {s_idx + 1}: {strip}")
-
-
-def _pedir_jugada_humana(game: AzulVitralGame, player_idx: int) -> Move:
-    legal_moves = game.get_legal_moves(player_idx)
-    print("\nJugadas legales disponibles:")
-    for i, mv in enumerate(legal_moves):
-        print(f"  [{i}] {mv}")
-
-    while True:
-        entrada = input(f"\nElige el índice de tu jugada (0..{len(legal_moves) - 1}): ").strip()
-        if entrada.isdigit():
-            idx = int(entrada)
-            if 0 <= idx < len(legal_moves):
-                return legal_moves[idx]
-        print("Entrada inválida. Ingresa un número dentro del rango indicado.")
-
-
-def jugar_contra_ia(
-    ruta_modelo: str = DEFAULT_MODELO,
-    k_lookahead: int = 6,
-    ia_empieza: bool = False,
-    demo_heuristica: bool = False,
-    ruta_json: Optional[str] = None,
-    seed: int = 42,
-) -> None:
-    agente = AgenteHibridoV4(ruta_modelo=ruta_modelo, k_lookahead=k_lookahead)
-    game = AzulVitralGame(num_players=2, seed=seed)
-
-    ia_idx = 0 if ia_empieza else 1
-    rival_idx = 1 - ia_idx
-    nombres = ["", ""]
-    nombres[ia_idx] = f"IA v4 (K={k_lookahead})"
-    nombres[rival_idx] = "Heurística Táctica" if demo_heuristica else "Humano"
-
-    historial: List[Dict[str, Any]] = []
-    turno = 0
-
-    print(f"\nIniciando partida: {nombres[0]} vs {nombres[1]}")
-    print(f"Checkpoint cargado: {agente.ruta_modelo}")
-
-    while not game.is_game_over():
-        actual = game.current_player_idx
-        if not demo_heuristica:
-            _mostrar_tablero(game, nombres)
-
-        t0 = time.perf_counter()
-        if actual == ia_idx:
-            mv = agente.elegir_jugada(game, actual)
-            dt_ms = (time.perf_counter() - t0) * 1000.0
-            print(f"\n>> {nombres[actual]} juega: {mv} ({dt_ms:.1f} ms)")
-        else:
-            if demo_heuristica:
-                mv = heuristic_move(game, actual)
-                print(f">> {nombres[actual]} juega: {mv}")
-            else:
-                mv = _pedir_jugada_humana(game, actual)
-
-        game.apply_move(actual, mv)
-        turno += 1
-        historial.append(
-            _serializar_estado_turno(
-                game=game,
-                turno=turno,
-                actor_idx=actual,
-                actor_nombre=nombres[actual],
-                accion_desc=str(mv),
-            )
-        )
-
-    s0, s1 = game.players[0].score, game.players[1].score
-    print("\n" + "#" * 68)
-    print("PARTIDA FINALIZADA")
-    print(f"  {nombres[0]}: {s0} puntos")
-    print(f"  {nombres[1]}: {s1} puntos")
-    if s0 > s1:
-        print(f"  Ganador: {nombres[0]}")
-    elif s1 > s0:
-        print(f"  Ganador: {nombres[1]}")
-    else:
-        print("  Resultado: Empate")
-    print("#" * 68)
-
-    if ruta_json:
-        out_path = Path(ruta_json)
-        if not out_path.is_absolute():
-            out_path = PROJECT_ROOT / out_path
-        payload = {
-            "meta": {
-                "jugador_0": nombres[0],
-                "jugador_1": nombres[1],
-                "k_lookahead": k_lookahead,
-                "seed": seed,
-                "puntaje_final": [int(s0), int(s1)],
-            },
-            "turnos": historial,
-        }
-        out_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
-        print(f"[OK] Historial exportado a: {out_path}")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Juega contra IA v4 o ejecuta una demostración vs Heurística."
+        description="Partida en consola contra IA v4 (models_checkpoint/ppo_azul_sintra_v4.zip)."
+    )
+    parser.add_argument(
+        "posicionales",
+        nargs="*",
+        help="Opcional: [nombre_jugador] [semilla]",
     )
     parser.add_argument(
         "--modelo",
         type=str,
-        default=DEFAULT_MODELO,
+        default=str(MODEL_V4_PATH),
         help="Ruta al checkpoint .zip de IA v4 (por defecto models_checkpoint/ppo_azul_sintra_v4.zip).",
     )
     parser.add_argument(
         "--k",
         type=int,
         default=6,
-        help="Número de jugadas candidatas Top-K para Lookahead 1-ply (1 = reactivo, 6 = híbrido).",
+        help="Candidatas Top-K para Lookahead 1-ply (1 = reactivo, 6 = híbrido).",
     )
     parser.add_argument(
         "--ia-empieza",
         action="store_true",
-        help="Asigna el asiento 0 (jugador inicial) a IA v4.",
+        help="Hace que IA v4 juegue en el primer asiento.",
     )
     parser.add_argument(
         "--demo-heuristica",
         action="store_true",
-        help="Ejecuta una partida automática entre IA v4 y la Heurística Táctica.",
+        help="Simula una partida automática entre IA v4 y la Heurística Táctica.",
     )
+    parser.add_argument("--v3", action="store_true", help="Enfrentar al modelo v3.")
+    parser.add_argument("--v2", action="store_true", help="Enfrentar al modelo v2.")
+    parser.add_argument("--v1", action="store_true", help="Enfrentar al modelo v1.")
+    parser.add_argument("--heuristica", action="store_true", help="Enfrentar a la heurística.")
+    parser.add_argument("--azar", action="store_true", help="Enfrentar al rival aleatorio.")
     parser.add_argument(
         "--json",
         type=str,
         default=None,
-        help="Ruta de salida JSON para visualizar la partida en visualizador_azul.html.",
+        help="Exporta el historial de la partida a un archivo JSON.",
     )
     args = parser.parse_args()
 
-    jugar_contra_ia(
-        ruta_modelo=args.modelo,
-        k_lookahead=args.k,
-        ia_empieza=args.ia_empieza,
-        demo_heuristica=args.demo_heuristica,
-        ruta_json=args.json,
-    )
+    nombre_humano = "Jugador"
+    semilla: Optional[int] = None
+    if len(args.posicionales) >= 1:
+        nombre_humano = args.posicionales[0]
+    if len(args.posicionales) >= 2 and args.posicionales[1].isdigit():
+        semilla = int(args.posicionales[1])
+
+    azar = random.Random(semilla)
+
+    if args.demo_heuristica:
+        agente_v4 = AgenteHibridoV4(ruta_modelo=args.modelo, k_lookahead=args.k)
+        nombres = [f"{MAQUINA}_K{args.k}", "Heurística"] if args.ia_empieza else ["Heurística", f"{MAQUINA}_K{args.k}"]
+        politicas = (
+            [jugador_ia_v4(agente_v4), jugador_heuristico(azar)]
+            if args.ia_empieza
+            else [jugador_heuristico(azar), jugador_ia_v4(agente_v4)]
+        )
+    else:
+        if args.azar:
+            nombre_rival = "Azar"
+            fn_rival = jugador_al_azar(azar)
+        elif args.heuristica:
+            nombre_rival = "Heurística"
+            fn_rival = jugador_heuristico(azar)
+        elif args.v3:
+            nombre_rival = "Máquina_v3"
+            fn_rival = jugador_ia_reactiva(cargar_modelo_maskable_ppo(MODEL_V3_PATH), "IA v3")
+        elif args.v2:
+            nombre_rival = "Máquina_v2"
+            fn_rival = jugador_ia_reactiva(cargar_modelo_maskable_ppo(MODEL_V2_PATH), "IA v2")
+        elif args.v1:
+            nombre_rival = "Máquina_v1"
+            fn_rival = jugador_ia_reactiva(cargar_modelo_maskable_ppo(MODEL_V1_PATH), "IA v1")
+        else:
+            agente_v4 = AgenteHibridoV4(ruta_modelo=args.modelo, k_lookahead=args.k)
+            nombre_rival = f"{MAQUINA}_K{args.k}"
+            fn_rival = jugador_ia_v4(agente_v4)
+
+        if args.ia_empieza:
+            nombres = [nombre_rival, nombre_humano]
+            politicas = [fn_rival, pedir_por_consola]
+        else:
+            nombres = [nombre_humano, nombre_rival]
+            politicas = [pedir_por_consola, fn_rival]
+
+    game = AzulVitralGame(player_names=nombres, seed=semilla)
+    historial: List[Dict[str, Any]] = []
+    turno = 0
+
+    print(f"Partida iniciada: {nombres[0]} vs {nombres[1]} (modelo: {args.modelo})")
+
+    while not partida_terminada(game):
+        actual = game.get_current_player()
+        actual_idx = next(i for i, p in enumerate(game.players) if p is actual)
+
+        if not args.demo_heuristica:
+            print_game(game)
+            print(f"--- Turno de {actual.name} ---")
+
+        jugada = politicas[actual_idx](game, actual)
+        aplicar_jugada_segura(game, actual_idx, jugada)
+
+        turno += 1
+        historial.append(_serializar_turno(game, turno, actual, jugada))
+
+    print_final(game)
+
+    if args.json:
+        out_path = Path(args.json)
+        if not out_path.is_absolute():
+            out_path = PROJECT_ROOT / out_path
+        payload = {
+            "meta": {
+                "jugador_0": nombres[0],
+                "jugador_1": nombres[1],
+                "modelo": str(args.modelo),
+                "k_lookahead": args.k,
+                "seed": semilla,
+                "puntaje_final": [int(game.players[0].score), int(game.players[1].score)],
+            },
+            "turnos": historial,
+        }
+        out_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+        print(f"[OK] Historial exportado a: {out_path}")
 
 
 if __name__ == "__main__":
