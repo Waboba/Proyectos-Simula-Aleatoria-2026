@@ -1,0 +1,3 @@
+experimento,w,n_ag,max_manos,criterio,modo,umbral,largo_agentes,cadena,criterio_mejor,mejor_agente,agente_mas_fuerte_liga,fuerza,fuerza_vs_agentes,fuerza_vs_uniforme,bb_vs_uniforme,bb_vs_anterior,archivo
+prueba,0.5,5,300,racha,puntual,0.575,2,Agente 4 > Agente 1 > Uniforme,cabeza de cadena,4,5,0.5381250000000001,0.5381250000000001,0.8766,-0.08533333333333333,0.5466666666666666,prueba/agentes/agente_04.npz
+prueba,0.5,5,300,racha,conservador,,0,(sin cadena de >=2 agentes),mayor fuerza (sin cadena),5,5,0.5485249999999999,0.5485249999999999,0.8748,2.1083333333333334,2.5325,prueba/agentes/agente_05.npz

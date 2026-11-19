@@ -1,0 +1,4 @@
+| experimento | w | n_ag | max_manos | criterio | modo | umbral | largo_agentes | cadena | criterio_mejor | mejor_agente | agente_mas_fuerte_liga | fuerza | fuerza_vs_agentes | fuerza_vs_uniforme | bb_vs_uniforme | bb_vs_anterior | accion_dominante | pct_retiro | pct_igualar | pct_subidas | pct_allin | archivo |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| grid_w_0_5_nag_10_manos_m3 | 0.500 | 10 | 3 | racha | puntual | 0.725 | 2 | Agente 9 > Agente 8 > Uniforme | cabeza de cadena | 9 | 10 | 0.530 | 0.530 | 0.803 | 1.767 | 0.870 | Igualar/Pasar | 0.036 | 0.569 | 0.395 | 0.129 | grid_w_0_5_nag_10_manos_m3/agentes/agente_09.npz |
+| grid_w_0_5_nag_10_manos_m3 | 0.500 | 10 | 3 | racha | conservador | 0.675 | 2 | Agente 4 > Agente 3 > Uniforme | cabeza de cadena | 4 | 10 | 0.499 | 0.499 | 0.895 | 3.422 | 2.167 | Igualar/Pasar | 0.012 | 0.429 | 0.558 | 0.105 | grid_w_0_5_nag_10_manos_m3/agentes/agente_04.npz |
