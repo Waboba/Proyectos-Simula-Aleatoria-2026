@@ -1,0 +1,47 @@
+{
+  "ronda": 3,
+  "colores_ronda": ["AZUL", "ROSADO", "AMARILLO", "TRANSPARENTE"],
+  "turno": "Beto",
+  "loseta": "Ana",
+  "fabricas": [["AZUL", "AZUL", "NARANJO", "ROSADO"], [], ["TRANSPARENTE"], [], []],
+  "centro": ["AMARILLO", "AMARILLO"],
+  "torre": [],
+  "jugadores": [
+    {
+      "nombre": "Ana",
+      "tablero": "rojo",
+      "puntos": 12,
+      "cristal_roto": 3,
+      "vidriero": 2,
+      "tiras": [
+        "tr tr TR TR TR",
+        "ROSADO na na na na",
+        "-",
+        "am am am am am",
+        "az am am am am",
+        "rs rs tr tr tr",
+        "na na na na na",
+        "am rs rs rs rs"
+      ],
+      "ventanas": [["TRANSPARENTE", null], [null, null], ["AZUL", "AZUL"], [null, null], [null, null], [null, null], [null, null], [null, null]]
+    },
+    {
+      "nombre": "Beto",
+      "tablero": "amarillo",
+      "puntos": 0,
+      "cristal_roto": 9,
+      "vidriero": 1,
+      "tiras": [
+        "NA ** rs *az am",
+        "az am am am am",
+        "az az az az az",
+        "rs na na na na",
+        "am am am am am",
+        "tr tr tr tr tr",
+        "rs rs tr tr tr",
+        "na na az az az"
+      ],
+      "ventanas": [[null, null], [null, null], [null, null], [null, null], [null, null], [null, null], [null, null], [null, null]]
+    }
+  ]
+}
