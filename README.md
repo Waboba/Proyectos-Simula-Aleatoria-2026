@@ -1,5 +1,5 @@
 # Proyecto de Simulación Estocástica: AI Plays Poker
-Proyecto del curso MA4402 Simulación Estocástica, AI Plays Poker
+Proyecto del curso MA4402 Simulación Estocástica, AI Plays Poker Grupo 5
 
 Este proyecto busca crear una IA a través de Simulación Estocástica que pueda jugar uniformemente Poker. 
 
