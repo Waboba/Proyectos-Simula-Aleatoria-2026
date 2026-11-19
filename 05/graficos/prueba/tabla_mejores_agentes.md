@@ -1,0 +1,4 @@
+| experimento | w | n_ag | max_manos | criterio | modo | umbral | largo_agentes | cadena | criterio_mejor | mejor_agente | agente_mas_fuerte_liga | fuerza | fuerza_vs_agentes | fuerza_vs_uniforme | bb_vs_uniforme | bb_vs_anterior | archivo |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| prueba | 0.500 | 5 | 300 | racha | puntual | 0.575 | 2 | Agente 4 > Agente 1 > Uniforme | cabeza de cadena | 4 | 5 | 0.538 | 0.538 | 0.877 | -0.085 | 0.547 | prueba/agentes/agente_04.npz |
+| prueba | 0.500 | 5 | 300 | racha | conservador | nan | 0 | (sin cadena de >=2 agentes) | mayor fuerza (sin cadena) | 5 | 5 | 0.548 | 0.548 | 0.875 | 2.108 | 2.533 | prueba/agentes/agente_05.npz |

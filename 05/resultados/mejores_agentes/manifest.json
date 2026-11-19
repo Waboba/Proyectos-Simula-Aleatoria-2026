@@ -1,0 +1,331 @@
+{
+  "descripcion": "Mejores agentes seleccionados de resultados/",
+  "modo_seleccion": "cima_cadena",
+  "agentes": {
+    "1": {
+      "archivo": "agentes/agente_01.npz",
+      "hash_q_sha256": "476854913c4db7113db21ebd9ba0507dcf741471176b13c17398f369ab235012",
+      "episodios": 30000,
+      "alcanzo_objetivo": true,
+      "semillas": {
+        "agente": 901243215,
+        "entorno": 3884055042
+      },
+      "origen_liga": "grid_w_0_75_nag_10_manos_m3",
+      "origen_agente": 1,
+      "motivo_seleccion": "cima_cadena_estricta"
+    },
+    "2": {
+      "archivo": "agentes/agente_01.npz",
+      "hash_q_sha256": "476854913c4db7113db21ebd9ba0507dcf741471176b13c17398f369ab235012",
+      "episodios": 30000,
+      "alcanzo_objetivo": true,
+      "semillas": {
+        "agente": 901243215,
+        "entorno": 3884055042
+      },
+      "origen_liga": "grid_w_0_75_nag_10_manos_m5",
+      "origen_agente": 1,
+      "motivo_seleccion": "cima_cadena_estricta"
+    },
+    "3": {
+      "archivo": "agentes/agente_01.npz",
+      "hash_q_sha256": "476854913c4db7113db21ebd9ba0507dcf741471176b13c17398f369ab235012",
+      "episodios": 30000,
+      "alcanzo_objetivo": true,
+      "semillas": {
+        "agente": 901243215,
+        "entorno": 3884055042
+      },
+      "origen_liga": "grid_w_0_75_nag_10_manos_inf",
+      "origen_agente": 1,
+      "motivo_seleccion": "cima_cadena_estricta"
+    },
+    "4": {
+      "archivo": "agentes/agente_01.npz",
+      "hash_q_sha256": "476854913c4db7113db21ebd9ba0507dcf741471176b13c17398f369ab235012",
+      "episodios": 30000,
+      "alcanzo_objetivo": true,
+      "semillas": {
+        "agente": 901243215,
+        "entorno": 3884055042
+      },
+      "origen_liga": "grid_w_0_75_nag_5_manos_m5",
+      "origen_agente": 1,
+      "motivo_seleccion": "cima_cadena_estricta"
+    },
+    "5": {
+      "archivo": "agentes/agente_01.npz",
+      "hash_q_sha256": "476854913c4db7113db21ebd9ba0507dcf741471176b13c17398f369ab235012",
+      "episodios": 30000,
+      "alcanzo_objetivo": true,
+      "semillas": {
+        "agente": 901243215,
+        "entorno": 3884055042
+      },
+      "origen_liga": "grid_w_0_75_nag_5_manos_inf",
+      "origen_agente": 1,
+      "motivo_seleccion": "cima_cadena_estricta"
+    },
+    "6": {
+      "archivo": "agentes/agente_01.npz",
+      "hash_q_sha256": "476854913c4db7113db21ebd9ba0507dcf741471176b13c17398f369ab235012",
+      "episodios": 30000,
+      "alcanzo_objetivo": true,
+      "semillas": {
+        "agente": 901243215,
+        "entorno": 3884055042
+      },
+      "origen_liga": "grid_w_0_75_nag_5_manos_m3",
+      "origen_agente": 1,
+      "motivo_seleccion": "cima_cadena_estricta"
+    },
+    "7": {
+      "archivo": "agentes/agente_01.npz",
+      "hash_q_sha256": "56500948f053c29c62e8af9a1df541398e2f2bb76c5a29289f313d630229dcdd",
+      "episodios": 10000,
+      "alcanzo_objetivo": true,
+      "semillas": {
+        "agente": 901243215,
+        "entorno": 3884055042
+      },
+      "origen_liga": "prueba_mixta",
+      "origen_agente": 1,
+      "motivo_seleccion": "cima_cadena_estricta"
+    },
+    "8": {
+      "archivo": "agentes/agente_01.npz",
+      "hash_q_sha256": "c7def26866795088ed17d850e4b63cbb312df824c82a5373cecc520afacc724f",
+      "episodios": 30000,
+      "alcanzo_objetivo": true,
+      "semillas": {
+        "agente": 901243215,
+        "entorno": 3884055042
+      },
+      "origen_liga": "grid_w_0_25_nag_5_manos_inf",
+      "origen_agente": 1,
+      "motivo_seleccion": "cima_cadena_estricta"
+    },
+    "9": {
+      "archivo": "agentes/agente_01.npz",
+      "hash_q_sha256": "c7def26866795088ed17d850e4b63cbb312df824c82a5373cecc520afacc724f",
+      "episodios": 30000,
+      "alcanzo_objetivo": true,
+      "semillas": {
+        "agente": 901243215,
+        "entorno": 3884055042
+      },
+      "origen_liga": "grid_w_0_25_nag_5_manos_m3",
+      "origen_agente": 1,
+      "motivo_seleccion": "cima_cadena_estricta"
+    },
+    "10": {
+      "archivo": "agentes/agente_01.npz",
+      "hash_q_sha256": "c7def26866795088ed17d850e4b63cbb312df824c82a5373cecc520afacc724f",
+      "episodios": 30000,
+      "alcanzo_objetivo": true,
+      "semillas": {
+        "agente": 901243215,
+        "entorno": 3884055042
+      },
+      "origen_liga": "grid_w_0_25_nag_5_manos_m5",
+      "origen_agente": 1,
+      "motivo_seleccion": "cima_cadena_estricta"
+    },
+    "11": {
+      "archivo": "agentes/agente_06.npz",
+      "hash_q_sha256": "c65a0cc564b385942a62317ac038e229581ec334db1684b2236e62c0fd31fb25",
+      "episodios": 390000,
+      "alcanzo_objetivo": true,
+      "semillas": {
+        "agente": 1749781631,
+        "entorno": 3670666263
+      },
+      "origen_liga": "liga_60_10manos",
+      "origen_agente": 6,
+      "motivo_seleccion": "cima_cadena_estricta"
+    },
+    "12": {
+      "archivo": "agentes/agente_01.npz",
+      "hash_q_sha256": "6a2b3956dcce48c88b7fe3dc476b52da718a8698748705dbf4a59d7419df63c0",
+      "episodios": 30000,
+      "alcanzo_objetivo": true,
+      "semillas": {
+        "agente": 901243215,
+        "entorno": 3884055042
+      },
+      "origen_liga": "grid_w_0_5_nag_5_manos_inf",
+      "origen_agente": 1,
+      "motivo_seleccion": "cima_cadena_estricta"
+    },
+    "13": {
+      "archivo": "agentes/agente_01.npz",
+      "hash_q_sha256": "6a2b3956dcce48c88b7fe3dc476b52da718a8698748705dbf4a59d7419df63c0",
+      "episodios": 30000,
+      "alcanzo_objetivo": true,
+      "semillas": {
+        "agente": 901243215,
+        "entorno": 3884055042
+      },
+      "origen_liga": "grid_w_0_5_nag_5_manos_m5",
+      "origen_agente": 1,
+      "motivo_seleccion": "cima_cadena_estricta"
+    },
+    "14": {
+      "archivo": "agentes/agente_01.npz",
+      "hash_q_sha256": "6a2b3956dcce48c88b7fe3dc476b52da718a8698748705dbf4a59d7419df63c0",
+      "episodios": 30000,
+      "alcanzo_objetivo": true,
+      "semillas": {
+        "agente": 901243215,
+        "entorno": 3884055042
+      },
+      "origen_liga": "grid_w_0_5_nag_5_manos_m3",
+      "origen_agente": 1,
+      "motivo_seleccion": "cima_cadena_estricta"
+    },
+    "15": {
+      "archivo": "agentes/agente_08.npz",
+      "hash_q_sha256": "1b2556934100f69dc0e85261de2cb2b668399d088f09cbaedc19f0aefbce98a1",
+      "episodios": 500000,
+      "alcanzo_objetivo": false,
+      "semillas": {
+        "agente": 3171933138,
+        "entorno": 4049553846
+      },
+      "origen_liga": "liga_90_10manos",
+      "origen_agente": 8,
+      "motivo_seleccion": "cima_cadena_estricta"
+    },
+    "16": {
+      "archivo": "agentes/agente_08.npz",
+      "hash_q_sha256": "1b2556934100f69dc0e85261de2cb2b668399d088f09cbaedc19f0aefbce98a1",
+      "episodios": 500000,
+      "alcanzo_objetivo": false,
+      "semillas": {
+        "agente": 3171933138,
+        "entorno": 4049553846
+      },
+      "origen_liga": "liga_80_10manos",
+      "origen_agente": 8,
+      "motivo_seleccion": "cima_cadena_estricta"
+    },
+    "17": {
+      "archivo": "agentes/agente_08.npz",
+      "hash_q_sha256": "1b2556934100f69dc0e85261de2cb2b668399d088f09cbaedc19f0aefbce98a1",
+      "episodios": 500000,
+      "alcanzo_objetivo": false,
+      "semillas": {
+        "agente": 3171933138,
+        "entorno": 4049553846
+      },
+      "origen_liga": "liga_70_10manos",
+      "origen_agente": 8,
+      "motivo_seleccion": "cima_cadena_estricta"
+    },
+    "18": {
+      "archivo": "agentes/agente_01.npz",
+      "hash_q_sha256": "5459f98d21291ab80214429374f53ca565907b4496c31011184adca1af2f8340",
+      "episodios": 10000,
+      "alcanzo_objetivo": true,
+      "semillas": {
+        "agente": 901243215,
+        "entorno": 3884055042
+      },
+      "origen_liga": "prueba",
+      "origen_agente": 1,
+      "motivo_seleccion": "cima_cadena_estricta"
+    },
+    "19": {
+      "archivo": "agentes/agente_01.npz",
+      "hash_q_sha256": "af628e514114e6c8f69ec1c6e126f5482e31df20fcd829d35eb60b20c7a6b171",
+      "episodios": 15000,
+      "alcanzo_objetivo": true,
+      "semillas": {
+        "agente": 901243215,
+        "entorno": 3884055042
+      },
+      "origen_liga": "liga",
+      "origen_agente": 1,
+      "motivo_seleccion": "cima_cadena_estricta"
+    },
+    "20": {
+      "archivo": "agentes/agente_01.npz",
+      "hash_q_sha256": "c7def26866795088ed17d850e4b63cbb312df824c82a5373cecc520afacc724f",
+      "episodios": 30000,
+      "alcanzo_objetivo": true,
+      "semillas": {
+        "agente": 901243215,
+        "entorno": 3884055042
+      },
+      "origen_liga": "grid_w_0_25_nag_10_manos_m5",
+      "origen_agente": 1,
+      "motivo_seleccion": "cima_cadena_estricta"
+    },
+    "21": {
+      "archivo": "agentes/agente_01.npz",
+      "hash_q_sha256": "c7def26866795088ed17d850e4b63cbb312df824c82a5373cecc520afacc724f",
+      "episodios": 30000,
+      "alcanzo_objetivo": true,
+      "semillas": {
+        "agente": 901243215,
+        "entorno": 3884055042
+      },
+      "origen_liga": "grid_w_0_25_nag_10_manos_m3",
+      "origen_agente": 1,
+      "motivo_seleccion": "cima_cadena_estricta"
+    },
+    "22": {
+      "archivo": "agentes/agente_01.npz",
+      "hash_q_sha256": "c7def26866795088ed17d850e4b63cbb312df824c82a5373cecc520afacc724f",
+      "episodios": 30000,
+      "alcanzo_objetivo": true,
+      "semillas": {
+        "agente": 901243215,
+        "entorno": 3884055042
+      },
+      "origen_liga": "grid_w_0_25_nag_10_manos_inf",
+      "origen_agente": 1,
+      "motivo_seleccion": "cima_cadena_estricta"
+    },
+    "23": {
+      "archivo": "agentes/agente_01.npz",
+      "hash_q_sha256": "6a2b3956dcce48c88b7fe3dc476b52da718a8698748705dbf4a59d7419df63c0",
+      "episodios": 30000,
+      "alcanzo_objetivo": true,
+      "semillas": {
+        "agente": 901243215,
+        "entorno": 3884055042
+      },
+      "origen_liga": "grid_w_0_5_nag_10_manos_inf",
+      "origen_agente": 1,
+      "motivo_seleccion": "cima_cadena_estricta"
+    },
+    "24": {
+      "archivo": "agentes/agente_01.npz",
+      "hash_q_sha256": "6a2b3956dcce48c88b7fe3dc476b52da718a8698748705dbf4a59d7419df63c0",
+      "episodios": 30000,
+      "alcanzo_objetivo": true,
+      "semillas": {
+        "agente": 901243215,
+        "entorno": 3884055042
+      },
+      "origen_liga": "grid_w_0_5_nag_10_manos_m3",
+      "origen_agente": 1,
+      "motivo_seleccion": "cima_cadena_estricta"
+    },
+    "25": {
+      "archivo": "agentes/agente_01.npz",
+      "hash_q_sha256": "6a2b3956dcce48c88b7fe3dc476b52da718a8698748705dbf4a59d7419df63c0",
+      "episodios": 30000,
+      "alcanzo_objetivo": true,
+      "semillas": {
+        "agente": 901243215,
+        "entorno": 3884055042
+      },
+      "origen_liga": "grid_w_0_5_nag_10_manos_m5",
+      "origen_agente": 1,
+      "motivo_seleccion": "cima_cadena_estricta"
+    }
+  }
+}

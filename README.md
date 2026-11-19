@@ -1,4 +1,5 @@
-# Proyectos finales Simulación estocástica
+# Proyecto de Simulación Estocástica: AI Plays Poker
+Proyecto del curso MA4402 Simulación Estocástica, AI Plays Poker Grupo 5
 
 GD con reinforcement learning y behavioral cloning.
 -Tomás Padilla

@@ -1,0 +1,156 @@
+{
+  "config": {
+    "n_agentes": 10,
+    "semilla": 0,
+    "criterio_victoria": "racha",
+    "k_racha": 3,
+    "max_manos_partida": 3,
+    "objetivo": 0.6,
+    "criterio_parada": "cada_rival",
+    "max_episodios": 500000,
+    "min_episodios": 20000,
+    "bloque": 10000,
+    "confirmaciones": 2,
+    "manos_eval": 8000,
+    "partidas_eval": 1200,
+    "detener_si_no_alcanza": false,
+    "alpha": 0.12,
+    "alpha_min": 0.01,
+    "decaimiento_alpha": 0.01,
+    "gamma": 1.0,
+    "eps_inicial": 1.0,
+    "eps_inicial_warm": 0.2,
+    "eps_final": 0.03,
+    "episodios_decaimiento": 250000,
+    "tau_eval": 0.0,
+    "peso_ultimo_rival": 0.45,
+    "recompensa": "mixta",
+    "rival_uniforme": "uniforme",
+    "peso_retiro_uniforme": null,
+    "fichas_iniciales": 1000,
+    "ciega_pequena": 10,
+    "ciega_grande": 20,
+    "permitir_retiro": true,
+    "manos_total": 18000,
+    "manos_por_par": null,
+    "partidas_total": 6000,
+    "partidas_por_par": null,
+    "checkpoint_cada": 100000,
+    "umbral_cadena": 0.9,
+    "umbrales": [
+      0.6,
+      0.7,
+      0.8,
+      0.9
+    ],
+    "peso_fichas": 0.5
+  },
+  "versiones": {
+    "python": "3.15.2",
+    "numpy": "2.5.4",
+    "plataforma": "Windows-11-10.0.26200-SP0",
+    "gymnasium": "1.4.0"
+  },
+  "agentes": {
+    "1": {
+      "archivo": "agentes/agente_01.npz",
+      "hash_q_sha256": "6a2b3956dcce48c88b7fe3dc476b52da718a8698748705dbf4a59d7419df63c0",
+      "episodios": 30000,
+      "alcanzo_objetivo": true,
+      "semillas": {
+        "agente": 901243215,
+        "entorno": 3884055042
+      }
+    },
+    "2": {
+      "archivo": "agentes/agente_02.npz",
+      "hash_q_sha256": "1fc33ddc95ee9609eee032aab06df20ce8a268863901ff9aaec3a52ae23d3478",
+      "episodios": 500000,
+      "alcanzo_objetivo": false,
+      "semillas": {
+        "agente": 1961547765,
+        "entorno": 1425400168
+      }
+    },
+    "3": {
+      "archivo": "agentes/agente_03.npz",
+      "hash_q_sha256": "3150733a43a99c9d208fc174f16adfc528f8a37cfe42dcc9fcac64336777fafa",
+      "episodios": 500000,
+      "alcanzo_objetivo": false,
+      "semillas": {
+        "agente": 3679268941,
+        "entorno": 3170341645
+      }
+    },
+    "4": {
+      "archivo": "agentes/agente_04.npz",
+      "hash_q_sha256": "f485f8fb45ee9dc30a030756325c5829d37575728a1c9c05bec1535d383b0e58",
+      "episodios": 500000,
+      "alcanzo_objetivo": false,
+      "semillas": {
+        "agente": 2040376534,
+        "entorno": 366692492
+      }
+    },
+    "5": {
+      "archivo": "agentes/agente_05.npz",
+      "hash_q_sha256": "2d9ad1013b84900c33646ca1d1498643794e29f395e6c80b36bec214b0075e8c",
+      "episodios": 500000,
+      "alcanzo_objetivo": false,
+      "semillas": {
+        "agente": 1565899405,
+        "entorno": 1950057878
+      }
+    },
+    "6": {
+      "archivo": "agentes/agente_06.npz",
+      "hash_q_sha256": "cf2131fbe8ecd8eb5fab2a6c2c4649875b77feb2f13a0d3fe5bda6c00966846d",
+      "episodios": 500000,
+      "alcanzo_objetivo": false,
+      "semillas": {
+        "agente": 1749781631,
+        "entorno": 3670666263
+      }
+    },
+    "7": {
+      "archivo": "agentes/agente_07.npz",
+      "hash_q_sha256": "12858a9b0563882779fdc6d37008acef609eadb956c82299ed266135dae56e29",
+      "episodios": 500000,
+      "alcanzo_objetivo": false,
+      "semillas": {
+        "agente": 663341227,
+        "entorno": 194365079
+      }
+    },
+    "8": {
+      "archivo": "agentes/agente_08.npz",
+      "hash_q_sha256": "82066f30a260605a06f4cff95063ad8f394e039ff316cd4a69beec3a77d5a5cc",
+      "episodios": 500000,
+      "alcanzo_objetivo": false,
+      "semillas": {
+        "agente": 3171933138,
+        "entorno": 4049553846
+      }
+    },
+    "9": {
+      "archivo": "agentes/agente_09.npz",
+      "hash_q_sha256": "9440e25ef69bf00a03dc3acffc4b1f11a549db39fe6294beeb64158563cdbe49",
+      "episodios": 500000,
+      "alcanzo_objetivo": false,
+      "semillas": {
+        "agente": 1951628595,
+        "entorno": 3400390762
+      }
+    },
+    "10": {
+      "archivo": "agentes/agente_10.npz",
+      "hash_q_sha256": "97d3cc82bec48968ecd7c54bcea242e34de5a5c8becbc7740b51571c2bd717a6",
+      "episodios": 500000,
+      "alcanzo_objetivo": false,
+      "semillas": {
+        "agente": 163312383,
+        "entorno": 832429202
+      }
+    }
+  }
+}
