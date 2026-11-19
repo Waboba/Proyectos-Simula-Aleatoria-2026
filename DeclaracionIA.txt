@@ -1,0 +1,8 @@
+ 
+Para este trabajo se utilizó la IA Gemini y ChatGPT para lo siguiente:
+
+- Generación de código, específicamente:
+        - Captura de input para que el agente pudiera jugar GD.
+        - Código para guadar pesos e información en archivos.
+        - Para plotear gráficos.
+- Debugging
