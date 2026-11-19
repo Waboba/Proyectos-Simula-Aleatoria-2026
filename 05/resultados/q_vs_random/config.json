@@ -1,0 +1,16 @@
+{
+  "episodios_pedidos": 100000,
+  "ep_inicio": 0,
+  "alpha": 0.1,
+  "gamma": 1.0,
+  "eps_inicial": 1.0,
+  "eps_final": 0.05,
+  "frac_decaimiento": 0.7,
+  "eval_cada": 5000,
+  "eval_manos": 4000,
+  "eval_partidas": 500,
+  "checkpoint_cada": 20000,
+  "semilla": 0,
+  "peso_retiro_rival": null,
+  "sin_retiro": false
+}

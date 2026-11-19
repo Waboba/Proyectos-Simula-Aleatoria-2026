@@ -1,0 +1,4 @@
+| experimento | w | n_ag | max_manos | criterio | modo | umbral | largo_agentes | cadena | criterio_mejor | mejor_agente | agente_mas_fuerte_liga | fuerza | fuerza_vs_agentes | fuerza_vs_uniforme | bb_vs_uniforme | bb_vs_anterior | accion_dominante | pct_retiro | pct_igualar | pct_subidas | pct_allin | archivo |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| liga_60_10manos | 0.500 | 10 | 10 | partida | puntual | 0.680 | 2 | Agente 5 > Agente 3 | cabeza de cadena | 5 | 10 | 0.490 | 0.490 | 0.632 | 2.825 | 2.136 | Igualar/Pasar | 0.111 | 0.642 | 0.248 | 0.041 | liga_60_10manos/agentes/agente_05.npz |
+| liga_60_10manos | 0.500 | 10 | 10 | partida | conservador | 0.660 | 2 | Agente 5 > Agente 3 | cabeza de cadena | 5 | 10 | 0.490 | 0.490 | 0.632 | 2.825 | 2.136 | Igualar/Pasar | 0.111 | 0.642 | 0.248 | 0.041 | liga_60_10manos/agentes/agente_05.npz |
