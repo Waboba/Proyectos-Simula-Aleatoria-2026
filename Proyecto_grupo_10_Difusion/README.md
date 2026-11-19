@@ -36,4 +36,9 @@ Dentro de los notebooks, los bloques hechos con apoyo de IA están marcados con 
 
 ## Referencias
 
-- Kim et al., *Refining Generative Process with Discriminator Guidance in Score-based Diffusion Models*, ICML 2023.
+- Holderrieth, P., Erives, E. (2026). *Introduction to Flow Matching and Diffusion Models* — apuntes del curso MIT 6.S184. https://diffusion.csail.mit.edu/2026/docs/lecture_notes.pdf
+- Página del curso MIT 6.S184 (con los códigos). https://diffusion.csail.mit.edu/2026/index.html
+- CompVis, *latent-diffusion* (repositorio). https://github.com/CompVis/latent-diffusion
+- Karras, T., et al. (2024). *Guiding a Diffusion Model with a Bad Version of Itself* (autoguidance). NVIDIA. NeurIPS 2024. arXiv:2406.02507.
+- Epstein, D., Jabri, A., Poole, B., Efros, A. A., Holynski, A. (2023). *Diffusion Self-Guidance for Controllable Image Generation*. NeurIPS 2023.
+- Kim, D., Kim, Y., Kwon, S. J., Kang, W., Moon, I.-C. (2023). *Refining Generative Process with Discriminator Guidance in Score-based Generative Models*. ICML 2023. — la base de "usar GANs".
