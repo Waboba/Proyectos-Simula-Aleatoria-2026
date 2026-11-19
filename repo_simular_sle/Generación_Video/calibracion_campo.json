@@ -1,0 +1,57 @@
+{
+  "samples": [
+    {
+      "kappa": 2,
+      "N": 32768,
+      "source_points": 1024,
+      "map_p95": 2.6210936482370225e-05,
+      "map_max": 0.00014167113730891723,
+      "log2_derivative_p95": 0.0005523317838237393,
+      "log2_derivative_max": 0.005883083576084136,
+      "derivative_estimator": "centered difference h=1e-5",
+      "reference_N": 262144,
+      "source_rectangle": [
+        -7,
+        3,
+        0.02,
+        5
+      ]
+    },
+    {
+      "kappa": 6,
+      "N": 65536,
+      "source_points": 1024,
+      "map_p95": 4.52508220395521e-05,
+      "map_max": 0.0002415609317914528,
+      "log2_derivative_p95": 0.0012140654327085548,
+      "log2_derivative_max": 0.024259637665385192,
+      "derivative_estimator": "centered difference h=1e-5",
+      "reference_N": 262144,
+      "source_rectangle": [
+        -7,
+        3,
+        0.02,
+        5
+      ]
+    },
+    {
+      "kappa": 20,
+      "N": 131072,
+      "source_points": 1024,
+      "map_p95": 8.156841786564491e-05,
+      "map_max": 0.0004092851878608074,
+      "log2_derivative_p95": 0.0029028372987658655,
+      "log2_derivative_max": 0.019601049255762337,
+      "derivative_estimator": "centered difference h=1e-5",
+      "reference_N": 262144,
+      "source_rectangle": [
+        -7,
+        3,
+        0.02,
+        5
+      ]
+    }
+  ],
+  "zero_driver_inverse_max_error": 4.033718787782255e-13,
+  "scope": "Finite-point diagnostics at t=1, not a global bound and not a boundary trace guarantee."
+}
