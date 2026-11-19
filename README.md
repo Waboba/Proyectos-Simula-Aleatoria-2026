@@ -1,192 +1,149 @@
-# Azul: Vitrales de Sintra (2 jugadores)
+# Azul: Vitrales de Sintra — Aprendizaje por Refuerzo Híbrido
 
-Simulación del juego en Python 3, sin dependencias externas.
+Agente de Inteligencia Artificial para el juego de mesa **Azul: Vitrales de Sintra**, desarrollado mediante **Aprendizaje por Refuerzo Profundo con Enmascaramiento de Acciones (`MaskablePPO`)**, **recompensa telescópica exacta** y **búsqueda *lookahead* acotada a 1 paso ($K=6$)**.
 
-## Archivos
+> **Proyecto de Inteligencia Artificial · Noviembre de 2026**  
+> **Autoras:** Josefina Gaete & Fran Loyola
 
-- `azulvitral.py`: motor de reglas (tiras, fábricas, centro, jugadores y la partida).
-- `partida.py`: `TwoPlayerMatch`, que lleva los turnos y le pide la jugada a cada jugador.
-- `impresion.py`: funciones para mostrar el estado en consola. Solo leen.
-- `jugar.py`: partida en consola entre dos personas.
-- `contra_maquina.py`: partida en consola contra la máquina, que elige al azar.
-- `estado.py`: cargar una partida que ya va en curso (respondiendo preguntas o desde un archivo).
-- `ejemplo_partida.py`: una partida completa con jugadas fijas.
-- `generar_ejemplo.py`: el programa que armó las jugadas del ejemplo.
-- `datos/tiras_patron.json`: las 8 tiras de cada uno de los 4 tableros, con sus dos caras,
-  transcritas de las capturas de Tabletop Simulator.
-- `datos/estado_ejemplo.json`: una partida en curso de ejemplo, para cargarla o copiar el formato.
-- `tests/test_motor.py`: pruebas del motor.
-- `DOCUMENTACION.md`: cada clase con sus métodos, y cómo se hizo la partida de ejemplo.
+---
 
-## Cómo jugar
+## Demo Visual Interactivo (D3.js)
 
-Desde la carpeta del proyecto:
+https://github.com/josefinagaetep/Proyectos-Simula-Aleatoria-2026/raw/main/iav4%20vs%20heuristica.mp4
 
-    python3 jugar.py                  (los jugadores se llaman Jugador 1 y Jugador 2)
-    python3 jugar.py Ana Beto         (con nombres)
-    python3 jugar.py Ana Beto 7       (con una semilla, para repetir el mismo reparto)
+El proyecto incluye un visualizador web en **D3.js** (`visualizador_azul.html`) que reconstruye partidas completas a partir de los historiales `.json` generados por los scripts, permitiendo inspeccionar jugada a jugada las fábricas, los vitrales de 8 columnas, la posición del vidriero, el track de cristal roto y la evolución del marcador.
 
-Para jugar contra la máquina:
+---
 
-    python3 contra_maquina.py             (tú te llamas Jugador)
-    python3 contra_maquina.py Ana         (con tu nombre)
-    python3 contra_maquina.py Ana 7       (con una semilla)
+## Sobre el Juego: *Azul: Vitrales de Sintra*
 
-La máquina no intenta ganar: en cada turno mira todas sus jugadas válidas y
-elige una al azar, todas con la misma probabilidad, y muestra cuál eligió.
+**Azul: Vitrales de Sintra** es un juego de estrategia secuencial por turnos para 2 jugadores, de **suma cero** y con información estocástica (robo aleatorio desde una bolsa de 100 fichas en 5 colores: *Azul, Amarillo, Rosado, Transparente y Naranjo*):
 
-Los dos programas preguntan primero:
+- **Objetivo y Duración:** La partida dura **6 rondas**. Cada jugador gestiona un tablero individual compuesto por **8 tiras verticales de vitral de doble cara** (columnas `C1` a `C8`, de 5 espacios cada una).
+- **Turno de Juego (Opción A / Opción B):**
+  - **Opción A (Tomar y colocar):** El jugador elige un color de una de las **5 fábricas** (que inician cada ronda con 4 fichas al azar) o del **centro de la mesa**, toma *todas* las fichas de ese color (moviendo las sobrantes de la fábrica al centro) y las coloca en una tira situada **debajo o a la derecha de su peón vidriero**.
+  - **Opción B (Reiniciar vidriero):** Si no conviene o no es posible avanzar hacia la derecha, el jugador puede gastar su turno para devolver el vidriero al extremo izquierdo del tablero.
+- **Puntuación en Cascada, Color de Moda y Ornamentos:** Al llenar los 5 espacios de una tira, esta se puntúa sumando su valor base (`[4, 3, 3, 2, 2, 1, 1, 2]`), el puntaje de todas las tiras ya completadas a su derecha (**cascada**), $+1\text{ pt}$ por cada ficha del **color favorito de la ronda** y bonos de hasta $+10\text{ pts}$ por **ornamentos adyacentes**. La primera vez que se completa una tira se voltea a su cara B; la segunda vez se retira del tablero.
+- **Track de Cristal Roto:** Las fichas tomadas que no quepan en la tira elegida (más la ficha de primer jugador del centro) avanzan en una escala creciente de penalización (`0, -1, -2, -4, -5, -8, -10, -12, -15, -18`). Si se desborda la casilla `#10`, se descuentan **18 puntos inmediatos** y el marcador reinicia en `#1`.
+- **Complejidad Combinatoria:** El juego posee $\approx 4{,}79 \times 10^{16}$ configuraciones iniciales posibles, $16.108.764$ ($\approx 1{,}61 \times 10^7$) ofertas distintas en fábricas por ronda y un espacio de hasta **1.621 acciones discretas** por turno.
 
-    1) Partida nueva
-    2) Partida en curso: escribir el estado
-    3) Partida en curso: cargar un archivo .json
+---
 
-Con una partida en curso, en `contra_maquina.py` además se dice cuál de los dos
-jugadores eres tú. Cómo se entrega el estado está más abajo, en "Cargar una
-partida en curso".
+## Evolución de Versiones (`IA v1` $\rightarrow$ `IA v4`)
 
-El programa muestra la mesa y le pide la jugada a quien le toca. Se escribe así:
+El desarrollo siguió una **cadena evolutiva curricular** en la que cada versión debía superar el **$>60\%$ de victorias** frente a su predecesora antes de avanzar de etapa:
 
-| Escribes | Qué hace |
-|---|---|
-| `3 azul 2` | Toma todas las azules de la fábrica 3 y las pone en la tira 2 |
-| `c naranjo 4` | Toma todas las naranjas del centro y las pone en la tira 4 |
-| `1 rosado 5 rosado` | Si la tira 5 se completa, la cuarta palabra es la pieza que queda en la ventana |
-| `2 amarillo -` | Si no queda ninguna tira bajo el vidriero ni a su derecha: se rompen todas |
-| `b` | Opción B: el vidriero vuelve a la tira de más a la izquierda |
-| `jugadas` | Lista todas las jugadas válidas en ese momento |
-| `salir` | Termina el programa |
+| Versión | Checkpoint | Arquitectura y Entrenamiento | Hito Principal | Victorias vs. Heurística | Rating Elo |
+| :--- | :--- | :--- | :--- | :---: | :---: |
+| **Aleatorio** | — | Selección uniforme sobre máscara legal | Línea base mínima | — | `1000` |
+| **`IA v1`** | `ppo_azul_sintra_v1.zip` | Estado `253D` · `MaskablePPO` (`200k` pasos) | Política base; vence **98,0 %** al azar | `2,0 %` | `1623` |
+| **`IA v2`** | `ppo_azul_sintra_v2.zip` | Estado `288D` · `MaskablePPO` (`500k` pasos) + currículo mixto | Incorpora tablero rival completo y conteo de bolsa/descarte; vence **68,0 %** a `IA v1` | `8,0 %` | `1813` |
+| **`IA v3`** | `ppo_azul_sintra_v3.zip` | *Behavioral Cloning* (`30k`) + `MaskablePPO` (`400k` pasos) | Preentrenamiento supervisado sobre jugadas expertas + RL; vence **68,0 %** a `IA v2` | `14,0 %` | `1998` |
+| **Heurística** | *Reglas tácticas* | Simulación 1 paso orientada a ganancia inmediata y bajo roto | Rival de referencia experto | `50,0 %` | `2284` |
+| **`IA v4` ($K=1$)** | `ppo_azul_sintra_v4.zip` | *Transfer Learning* desde `v3` (`lr=8e-5`, `400k` pasos) + **Recompensa Telescópica** | Política neuronal pura entrenada con currículo (`50% Heur. / 30% v3 / 15% v2 / 5% Azar`) | `23,0 %` | — |
+| **`IA v4` ($K=6$)** | `ppo_azul_sintra_v4.zip` | **`IA v4` + Búsqueda Híbrida *Lookahead* Top-$K$** | Supera a la Heurística (**56,0 %**), vence **82,0 %** a `IA v3` y logra **76,5 %** global | **`56,0 %`** | **`2326*`** |
 
-Los colores se pueden abreviar con dos letras: `na`, `am`, `rs`, `az`, `tr`.
-Las fábricas van de 1 a 5 y las tiras (columnas) de 1 a 8, como en la mesa.
-Si la jugada no vale, el programa dice por qué y la vuelve a pedir.
+*\*Elo efectivo estimado mediante el modelo Bradley-Terry a partir de torneos balanceados de $N = 100$ partidas por rival.*
 
-### En cada turno
+---
 
-- **Opción A.** Tomar todas las piezas de un color de una fábrica (el resto
-  pasa al centro) o del centro. El primero que toma del centro en la ronda se
-  lleva la loseta inicial y avanza 1 en el cristal roto. Todas van a una sola
-  tira, bajo el vidriero o a su derecha; si es a la derecha, el vidriero se
-  mueve. Las que no caben se rompen y avanzan el track de cristal roto. Si
-  ninguna tira alcanzable tiene espacio para ese color, se elige igual una tira
-  y se rompen todas; si alguna tiene espacio, hay que usarla.
-- **Opción B.** El vidriero vuelve a la tira de más a la izquierda.
+## Cómo se Utilizan las Versiones (Resumen Unificado)
 
-Al completar una tira: +1 por cada pieza del color de la ronda, una pieza va a
-la ventana (la primera vez arriba y la tira se voltea; la segunda abajo y la
-tira se retira) y se suman los puntos de esa ventana más los de toda ventana a
-su derecha que ya tenga piezas.
+**Las versiones `v2`, `v3` y `v4` comparten exactamente la misma interfaz de entrada/salida:** todas emplean el vector de observación de **288 dimensiones (`288D`)**, el espacio de **1.621 acciones discretas** con enmascaramiento legal y la clase cargadora `AgenteHibridoV4` (`src/env_azul_v4.py`).
 
-Al llegar a la casilla 10 del cristal roto se pierden 18 puntos en ese mismo
-turno y el marcador vuelve a la casilla 1. El puntaje nunca baja de 0.
+- **`IA v4` (por defecto):** carga `models_checkpoint/ppo_azul_sintra_v4.zip` con `--k 6` (activa el *lookahead* híbrido a 1 paso, $\approx 4\text{ ms}$ por jugada).
+- **`IA v2` e `IA v3`:** pueden ejecutarse con los mismos scripts pasando su `.zip` en `--modelo` y fijando `--k 1` (o mediante los flags `--v3` y `--v2`).
+- **`IA v1`:** emplea la representación inicial de `253D` (previa a la ampliación a `288D`); los scripts `contra_maquina_ia_v4.py` (`--v1`) y `evaluar_ia_v4.py` detectan y adaptan su dimensión automáticamente.
 
-Al final de la ronda 6: +1 por cada 3 piezas que quedaron en las tiras, se
-resta la casilla del cristal roto y se suman los ornamentos (por cada uno, sus
-4 espacios: 0 o 1 con pieza +0, 2 +3, 3 +6, 4 +10). Gana el que tiene más
-puntos; si empatan, el que quedó en una casilla más baja del cristal roto, y si
-siguen empatados es empate técnico.
+---
 
-## Cargar una partida en curso
+## Guía de Uso
 
-Con la opción 2 el programa pregunta dato por dato y, si algo no sirve, dice por
-qué y lo vuelve a preguntar:
+Todos los comandos deben ejecutarse desde la **raíz del proyecto** (`Proyectos-Simula-Aleatoria-2026/`).
 
-1. La ronda actual y los colores que quedan en el marcador de ronda, desde la
-   ronda actual hasta la 6 (por ejemplo `az rs am tr` en la ronda 3).
-2. Por cada jugador: nombre, tablero, puntos, casilla del cristal roto, columna
-   del vidriero, sus 8 tiras y sus ventanas.
-3. Las 5 fábricas, el centro, dónde está la loseta inicial, a quién le toca y
-   las piezas de la torre de cristal.
+### 1. Jugar contra `IA v4` en Consola
 
-Cada tira se escribe como se ve, de arriba hacia abajo:
-
-| Escribes | Significa |
-|---|---|
-| `tr` | espacio transparente libre |
-| `TR` | espacio transparente con su pieza puesta |
-| `**` | comodín libre |
-| `*na` | comodín con una pieza naranja |
-| `-` | la tira ya se retiró del tablero |
-
-Por ejemplo `tr tr am am am` es una tira con dos espacios transparentes y tres
-amarillos, todos libres, y `tr tr AM AM AM` es la misma tira con los tres
-amarillos ya puestos. Con la cara que se ve, el programa reconoce qué tira es
-y qué tiene al reverso.
-
-Las ventanas se escriben juntas, solo las que tienen pieza: `1:tr 3:az/rs` es
-una transparente arriba en la ventana 1, y en la 3 una azul arriba y una
-rosada abajo. Las fábricas y el centro se escriben con sus colores (`az az na
-rs`) o `-` si están vacíos. Si no se sabe qué hay en la torre se deja en blanco:
-las piezas que no están a la vista se dan por estar en la bolsa.
-
-Al terminar, el programa revisa que todo cuadre (que no haya más de 20 piezas
-de un color, que una tira no esté en dos columnas, que una tira retirada tenga
-su ventana llena, etc.). Si algo no cuadra dice qué, y ofrece guardar lo
-escrito en un archivo para corregirlo y cargarlo con la opción 3. Si todo está
-bien, ofrece guardarlo igual, para no tener que escribirlo de nuevo.
-
-El archivo es un JSON con los mismos datos; `datos/estado_ejemplo.json` sirve
-de modelo.
-
-## Otros comandos
-
-    python3 ejemplo_partida.py             partida de ejemplo, la mesa al empezar cada ronda
-    python3 ejemplo_partida.py --detalle   la mesa después de cada turno
-    python3 generar_ejemplo.py             vuelve a armar las jugadas del ejemplo
-    python3 -m unittest -v                 corre las pruebas
-
-## Usarlo desde código
-
-    from azulvitral import CENTER, Color, Move
-    from impresion import print_game, print_turn
-    from partida import TwoPlayerMatch
-
-    partida = TwoPlayerMatch(["Ana", "Beto"], seed=1, first_player="Ana")
-    print_game(partida.game)
-    reporte = partida.play_turn(Move.take(3, Color.AZUL, 2))  # fábrica 3, tira 2
-    print_turn(reporte)
-
-Si la jugada completa la tira, se agrega la pieza que queda en la ventana:
-`Move.take(CENTER, Color.NARANJO, 4, Color.NARANJO)`. La opción B es
-`Move.reset_glazier()`. Una jugada inválida lanza `InvalidMoveError` con el
-motivo y no cambia nada; `game.validate_move(move)` devuelve el motivo sin
-lanzar y `game.legal_moves()` lista las jugadas válidas.
-
-Para otra interfaz, a `TwoPlayerMatch` se le pasa en `inputs` una función por
-jugador que recibe `(game, player)` y devuelve una `Move`; `run()` juega hasta el
-final. `jugar.py` es un ejemplo de eso.
-
-### Archivos de Aprendizaje por Refuerzo (RL)
-
-- `src/env_azul.py`: entorno PettingZoo/Gymnasium v1 (`253` características, `1.621` acciones con máscara).
-- `src/env_azul_v2.py`: entorno v2 (`288` características con marcador completo de 6 rondas, *reward shaping* de cascadas/ornamentos y política heurística táctica).
-- `scripts/train_rl.py` / `scripts/train_rl_v2.py`: entrenamiento de `MaskablePPO` (`v1` contra azar; `v2` con currículo Self-Play + Heurística).
-- `scripts/evaluar_ia.py` / `scripts/evaluar_ia_v2.py`: evaluación cuantitativa en 100 partidas alternando jugador inicial.
-- `scripts/contra_maquina.py` / `scripts/contra_maquina_v2.py`: partida en consola contra la IA entrenada (`--v1`, `--heuristica`, `--azar`).
-- `models_checkpoint/`: pesos entrenados (`ppo_azul_sintra_v1.zip` y `ppo_azul_sintra_v2.zip`).
-- `tests/test_env.py`: pruebas unitarias del entorno RL, biyección de acciones y API de PettingZoo/Gymnasium.
-
-## Inteligencia Artificial (Aprendizaje por Refuerzo)
-
-El proyecto entrena un agente mediante **Proximal Policy Optimization con enmascaramiento de acciones (`MaskablePPO`)** sobre `PettingZoo` (ciclo por turnos de 2 jugadores) y `Gymnasium`:
-
-- **Espacio de acciones biyectivo (`1.621` acciones):** Codifica de forma reversible la Opción B (`0`) y todas las combinaciones de Opción A (`1..1620`: origen, color, tira de destino y color de ventana). En cada turno, `ActionMasker` filtra las jugadas ilegales antes de muestrear la política.
-- **Evolución de modelos:**
-  - **`v1` (`200.000` pasos):** Entrenada frente a un oponente aleatorio (`253` características).
-  - **`v2` (`500.000` pasos):** Entrenada con vector enriquecido (`288` características) y currículo mixto (**45% Heurística táctica**, **35% Self-Play contra `v1`**, **20% Aleatorio**).
-
-### Comandos de IA
+Por defecto, `contra_maquina_ia_v4.py` carga `models_checkpoint/ppo_azul_sintra_v4.zip` con búsqueda híbrida **$K = 6$**:
 
 ```bash
-# Jugar en consola contra la IA v2 (o usar --v1 / --heuristica / --azar)
-python -m scripts.contra_maquina_v2
+# Partida estándar contra IA v4 (K=6) indicando tu nombre
+python -m scripts.contra_maquina_ia_v4 Ana
 
-# Evaluar rendimiento en 100 partidas contra cada rival
-python -m scripts.evaluar_ia_v2
+# Partida con nombre y semilla reproducible
+python -m scripts.contra_maquina_ia_v4 Ana 7
 
-# Reentrenar modelo v2 y visualizar curvas en TensorBoard
-python -m scripts.train_rl_v2
-tensorboard --logdir=./tensorboard_logs/
+# Elegir el nivel de búsqueda Lookahead (--k 1 = modo reactivo puro, --k 12 = búsqueda amplia)
+python -m scripts.contra_maquina_ia_v4 Ana --k 1
+python -m scripts.contra_maquina_ia_v4 Ana --k 12
 
-# Ejecutar toda la batería de pruebas (motor + entorno RL)
-python -m unittest -v
+# Hacer que IA v4 juegue el primer turno
+python -m scripts.contra_maquina_ia_v4 Ana --ia-empieza
+```
+
+También puedes enfrentar desde el mismo script a las versiones anteriores y líneas base:
+
+```bash
+python -m scripts.contra_maquina_ia_v4 Ana --v3
+python -m scripts.contra_maquina_ia_v4 Ana --v2
+python -m scripts.contra_maquina_ia_v4 Ana --v1
+python -m scripts.contra_maquina_ia_v4 Ana --heuristica
+python -m scripts.contra_maquina_ia_v4 Ana --azar
+```
+
+Si deseas especificar manualmente la ruta del checkpoint:
+
+```bash
+python -m scripts.contra_maquina_ia_v4 Ana --modelo models_checkpoint/ppo_azul_sintra_v4.zip --k 6
+```
+
+---
+
+### 2. Exportar Partidas para el Visualizador Web (`D3.js`)
+
+Simula una partida completa entre `IA v4` ($K=6$) y la Heurística Táctica guardando el historial turno a turno en JSON:
+
+```bash
+python -m scripts.contra_maquina_ia_v4 --demo-heuristica --json partida_historial.json
+```
+
+Luego abre **`visualizador_azul.html`** en tu navegador y carga el archivo **`partida_historial.json`** generado.
+
+---
+
+### 3. Evaluación Experimental (Benchmark Balanceado)
+
+El script `evaluar_ia_v4.py` ejecuta series de $N$ partidas deterministas por rival alternando estrictamente el asiento inicial (`50%` jugador 0 / `50%` jugador 1) para eliminar la ventaja de salida:
+
+```bash
+python -m scripts.evaluar_ia_v4 --partidas 100 --k 6
+```
+
+---
+
+### 4. Reentrenamiento de `IA v4` (*Transfer Learning*)
+
+Para reentrenar `IA v4` desde `models_checkpoint/ppo_azul_sintra_v3.zip` sobre el entorno telescópico `AzulSintraEnvV4`:
+
+```bash
+python -m scripts.train_rl_v4 --timesteps 400000 --n-envs 4 --lr 8e-5
+```
+
+---
+
+## Requisitos y Estructura del Repositorio
+
+### Instalación de Dependencias
+
+Se recomienda Python **3.11 – 3.13** (por ejemplo, en un entorno Conda):
+
+```bash
+pip install numpy torch gymnasium pettingzoo stable-baselines3 sb3-contrib
+```
+
+> **Nota en Windows / Conda:** Si el comando `python` apunta a una instalación global distinta, activa tu entorno (`conda activate grafica`) o ejecuta usando la ruta directa al intérprete del entorno:
+> ```powershell
+> & "C:\Users\<USUARIO>\anaconda3\envs\grafica\python.exe" -m scripts.contra_maquina_ia_v4 Ana
+> ```
+
+
+disclaimer: los códigos fueron generados con IA, por optimización de tiempo y uso de librerías convenientes
