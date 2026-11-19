@@ -1,0 +1,22 @@
+# Python y entornos virtuales
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.coverage
+
+# Entrenamiento RL, checkpoints y TensorBoard
+tensorboard_logs/
+*.log
+
+
+# Sistemas operativos y editores
+.DS_Store
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/

@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Azul: Vitrales de Sintra — Visualizador RL (D3.js)</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #1e293b;
+      --panel-border: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --gold: #fbbf24;
+      --danger: #f87171;
+      --success: #34d399;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at top, #1e293b 0%, #0b1120 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: rgba(15, 23, 42, 0.92);
+      border-bottom: 1px solid var(--panel-border);
+      padding: 12px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .title-group h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      color: #f1f5f9;
+    }
+    .title-group p {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    button, .file-btn {
+      background: #1e293b;
+      color: var(--text);
+      border: 1px solid #475569;
+      padding: 7px 13px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    button:hover, .file-btn:hover {
+      background: #334155;
+      border-color: var(--accent);
+    }
+    button.primary {
+      background: #0284c7;
+      border-color: #38bdf8;
+      color: #fff;
+    }
+    button.primary:hover { background: #0369a1; }
+    select {
+      background: #1e293b;
+      color: var(--text);
+      border: 1px solid #475569;
+      padding: 7px 10px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+    input[type="file"] { display: none; }
+
+    .scrubber-bar {
+      background: rgba(30, 41, 59, 0.75);
+      border-bottom: 1px solid var(--panel-border);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .scrubber-bar input[type="range"] {
+      flex: 1;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .turn-badge {
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--accent);
+      min-width: 135px;
+    }
+
+    .narrative-banner {
+      margin: 12px 24px 0;
+      padding: 12px 18px;
+      background: rgba(30, 41, 59, 0.9);
+      border: 1px solid var(--panel-border);
+      border-left: 4px solid var(--accent);
+      border-radius: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-height: 52px;
+    }
+    .narrative-text {
+      font-size: 0.96rem;
+      line-height: 1.4;
+      color: #e2e8f0;
+    }
+    .emergent-tag {
+      background: rgba(251, 191, 36, 0.16);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .emergent-tag.good {
+      background: rgba(52, 211, 153, 0.15);
+      border-color: var(--success);
+      color: var(--success);
+    }
+    .emergent-tag.warn {
+      background: rgba(248, 113, 113, 0.15);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    main {
+      flex: 1;
+      padding: 12px 24px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #canvas-container {
+      width: 100%;
+      max-width: 1420px;
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid var(--panel-border);
+      border-radius: 14px;
+      padding: 8px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+    }
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .drop-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 132, 199, 0.25);
+      border: 4px dashed var(--accent);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      font-weight: 700;
+      z-index: 50;
+      backdrop-filter: blur(4px);
+    }
+  </style>
+</head>
+<body>
+  <div class="drop-overlay" id="dropOverlay">Suelta aquí tu archivo partida_historial.json</div>
+
+  <header>
+    <div class="title-group">
+      <h1 id="matchTitle">Azul: Vitrales de Sintra — Visualizador RL (D3.js)</h1>
+      <p id="matchSubtitle">Carga partida_historial.json o explora la partida de demostración integrada</p>
+    </div>
+    <div class="controls">
+      <label class="file-btn" for="jsonInput">📂 Cargar JSON de partida</label>
+      <input type="file" id="jsonInput" accept=".json" />
+      <button id="btnStart" title="Ir al inicio">⏮ Inicio</button>
+      <button id="btnPrev" title="Turno anterior (Flecha Izquierda)">◀ Anterior</button>
+      <button id="btnPlay" class="primary" title="Reproducir / Pausar (Espacio)">▶ Reproducir</button>
+      <button id="btnNext" title="Siguiente turno (Flecha Derecha)">Siguiente ▶</button>
+      <select id="speedSelect" title="Velocidad de reproducción">
+        <option value="1400">0.7x (Explicación)</option>
+        <option value="900" selected>1.0x (Normal)</option>
+        <option value="450">2.0x (Rápido)</option>
+      </select>
+    </div>
+  </header>
+
+  <div class="scrubber-bar">
+    <span class="turn-badge" id="turnCounter">Turno 0 / 0</span>
+    <input type="range" id="turnSlider" min="0" max="0" value="0" />
+    <span id="roundInfo" style="font-size:0.88rem; color:#cbd5e1; font-weight:600;">Ronda 1 / 6</span>
+  </div>
+
+  <div class="narrative-banner">
+    <div class="narrative-text" id="narrativeText">Estado inicial de la partida.</div>
+    <div id="emergentBadge"></div>
+  </div>
+
+  <main>
+    <div id="canvas-container">
+      <svg id="boardSvg" viewBox="0 0 1400 790"></svg>
+    </div>
+  </main>
+
+  <script>
+    const TILE_COLORS = {
+      NARANJO:      { fill: "#f97316", stroke: "#fdba74", text: "#fff", label: "NA" },
+      AMARILLO:     { fill: "#eab308", stroke: "#fef08a", text: "#0f172a", label: "AM" },
+      ROSADO:       { fill: "#ec4899", stroke: "#f9a8d4", text: "#fff", label: "RS" },
+      AZUL:         { fill: "#2563eb", stroke: "#93c5fd", text: "#fff", label: "AZ" },
+      TRANSPARENTE: { fill: "#38bdf8", stroke: "#e0f2fe", text: "#0f172a", label: "TR" },
+      COMODIN:      { fill: "#a855f7", stroke: "#e9d5ff", text: "#fff", label: "★" },
+    };
+
+    const BROKEN_TRACK = [0, -1, -2, -4, -5, -8, -10, -12, -15, -18];
+
+    // Partida de muestra integrada para apertura inmediata sin servidor
+    const DEMO_DATA = {
+      meta: {
+        titulo: "Azul: Vitrales de Sintra — Demo Integrada (Carga tu JSON para ver tu partida)",
+        agente_principal: "IA v4 (Lookahead K=6)",
+        rival: "Heurística Táctica",
+        seed: 42,
+        total_turnos: 2,
+        ganador: "IA v4 (Lookahead K=6)",
+        marcador_final: [68, 59]
+      },
+      frames: [
+        {
+          turno: 0,
+          ronda: 1,
+          color_ronda: "AZUL",
+          marcador_ronda: ["AZUL", "NARANJO", "AMARILLO", "ROSADO", "TRANSPARENTE", "AZUL"],
+          bolsa_count: 75,
+          torre_count: 0,
+          jugador_activo: 0,
+          fabricas: [
+            ["AZUL", "AZUL", "NARANJO", "ROSADO"],
+            ["AMARILLO", "TRANSPARENTE", "AZUL", "AMARILLO"],
+            ["ROSADO", "ROSADO", "NARANJO", "TRANSPARENTE"],
+            ["TRANSPARENTE", "AZUL", "AMARILLO", "NARANJO"],
+            ["NARANJO", "NARANJO", "AMARILLO", "ROSADO"]
+          ],
+          centro: { piezas: [], tiene_loseta_inicial: true },
+          jugadores: [
+            {
+              nombre: "IA v4 (Lookahead K=6)",
+              tablero: "rojo",
+              puntos: 0,
+              cristal_roto: 1,
+              penalizacion_roto: 0,
+              vidriero: 0,
+              tiene_loseta_inicial: true,
+              tiras: [
+                { columna: 1, cara: "anv", retirada: false, patron: ["AZUL", "NARANJO", "AZUL", "ROSADO", "AMARILLO"], piezas: [null, null, null, null, null] },
+                { columna: 2, cara: "anv", retirada: false, patron: ["TRANSPARENTE", "AZUL", "AMARILLO", "NARANJO", "ROSADO"], piezas: [null, null, null, null, null] },
+                { columna: 3, cara: "anv", retirada: false, patron: ["ROSADO", "TRANSPARENTE", "AZUL", "AMARILLO", "NARANJO"], piezas: [null, null, null, null, null] },
+                { columna: 4, cara: "anv", retirada: false, patron: ["NARANJO", "ROSADO", "TRANSPARENTE", "AZUL", "AMARILLO"], piezas: [null, null, null, null, null] },
+                { columna: 5, cara: "anv", retirada: false, patron: ["AMARILLO", "NARANJO", "ROSADO", "TRANSPARENTE", "AZUL"], piezas: [null, null, null, null, null] },
+                { columna: 6, cara: "anv", retirada: false, patron: ["AZUL", "AMARILLO", "NARANJO", "ROSADO", "TRANSPARENTE"], piezas: [null, null, null, null, null] },
+                { columna: 7, cara: "anv", retirada: false, patron: ["TRANSPARENTE", "ROSADO", "AMARILLO", "AZUL", "NARANJO"], piezas: [null, null, null, null, null] },
+                { columna: 8, cara: "anv", retirada: false, patron: ["NARANJO", "AMARILLO", "TRANSPARENTE", "ROSADO", "AZUL"], piezas: [null, null, null, null, null] }
+              ],
+              ventanas: [4,3,3,2,2,1,1,2].map((v, i) => ({ columna: i+1, superior: null, inferior: null, valor: v })),
+              ornamentos: [0, 0, 0, 0]
+            },
+            {
+              nombre: "Heurística Táctica",
+              tablero: "amarillo",
+              puntos: 0,
+              cristal_roto: 1,
+              penalizacion_roto: 0,
+              vidriero: 0,
+              tiene_loseta_inicial: false,
+              tiras: [
+                { columna: 1, cara: "anv", retirada: false, patron: ["NARANJO", "AZUL", "AMARILLO", "ROSADO", "TRANSPARENTE"], piezas: [null, null, null, null, null] },
+                { columna: 2, cara: "anv", retirada: false, patron: ["AZUL", "TRANSPARENTE", "ROSADO", "AMARILLO", "NARANJO"], piezas: [null, null, null, null, null] },
+                { columna: 3, cara: "anv", retirada: false, patron: ["AMARILLO", "NARANJO", "AZUL", "TRANSPARENTE", "ROSADO"], piezas: [null, null, null, null, null] },
+                { columna: 4, cara: "anv", retirada: false, patron: ["ROSADO", "AMARILLO", "NARANJO", "AZUL", "TRANSPARENTE"], piezas: [null, null, null, null, null] },
+                { columna: 5, cara: "anv", retirada: false, patron: ["TRANSPARENTE", "ROSADO", "AMARILLO", "NARANJO", "AZUL"], piezas: [null, null, null, null, null] },
+                { columna: 6, cara: "anv", retirada: false, patron: ["NARANJO", "TRANSPARENTE", "ROSADO", "AMARILLO", "AZUL"], piezas: [null, null, null, null, null] },
+                { columna: 7, cara: "anv", retirada: false, patron: ["AZUL", "ROSADO", "NARANJO", "TRANSPARENTE", "AMARILLO"], piezas: [null, null, null, null, null] },
+                { columna: 8, cara: "anv", retirada: false, patron: ["AMARILLO", "AZUL", "TRANSPARENTE", "NARANJO", "ROSADO"], piezas: [null, null, null, null, null] }
+              ],
+              ventanas: [4,3,3,2,2,1,1,2].map((v, i) => ({ columna: i+1, superior: null, inferior: null, valor: v })),
+              ornamentos: [0, 0, 0, 0]
+            }
+          ],
+          accion: null,
+          final: null
+        },
+        {
+          turno: 1,
+          ronda: 1,
+          color_ronda: "AZUL",
+          marcador_ronda: ["AZUL", "NARANJO", "AMARILLO", "ROSADO", "TRANSPARENTE", "AZUL"],
+          bolsa_count: 75,
+          torre_count: 0,
+          jugador_activo: 1,
+          fabricas: [
+            [],
+            ["AMARILLO", "TRANSPARENTE", "AZUL", "AMARILLO"],
+            ["ROSADO", "ROSADO", "NARANJO", "TRANSPARENTE"],
+            ["TRANSPARENTE", "AZUL", "AMARILLO", "NARANJO"],
+            ["NARANJO", "NARANJO", "AMARILLO", "ROSADO"]
+          ],
+          centro: { piezas: ["NARANJO", "ROSADO"], tiene_loseta_inicial: true },
+          jugadores: [
+            {
+              nombre: "IA v4 (Lookahead K=6)",
+              tablero: "rojo",
+              puntos: 0,
+              cristal_roto: 1,
+              penalizacion_roto: 0,
+              vidriero: 0,
+              tiene_loseta_inicial: true,
+              tiras: [
+                { columna: 1, cara: "anv", retirada: false, patron: ["AZUL", "NARANJO", "AZUL", "ROSADO", "AMARILLO"], piezas: ["AZUL", null, "AZUL", null, null] },
+                { columna: 2, cara: "anv", retirada: false, patron: ["TRANSPARENTE", "AZUL", "AMARILLO", "NARANJO", "ROSADO"], piezas: [null, null, null, null, null] },
+                { columna: 3, cara: "anv", retirada: false, patron: ["ROSADO", "TRANSPARENTE", "AZUL", "AMARILLO", "NARANJO"], piezas: [null, null, null, null, null] },
+                { columna: 4, cara: "anv", retirada: false, patron: ["NARANJO", "ROSADO", "TRANSPARENTE", "AZUL", "AMARILLO"], piezas: [null, null, null, null, null] },
+                { columna: 5, cara: "anv", retirada: false, patron: ["AMARILLO", "NARANJO", "ROSADO", "TRANSPARENTE", "AZUL"], piezas: [null, null, null, null, null] },
+                { columna: 6, cara: "anv", retirada: false, patron: ["AZUL", "AMARILLO", "NARANJO", "ROSADO", "TRANSPARENTE"], piezas: [null, null, null, null, null] },
+                { columna: 7, cara: "anv", retirada: false, patron: ["TRANSPARENTE", "ROSADO", "AMARILLO", "AZUL", "NARANJO"], piezas: [null, null, null, null, null] },
+                { columna: 8, cara: "anv", retirada: false, patron: ["NARANJO", "AMARILLO", "TRANSPARENTE", "ROSADO", "AZUL"], piezas: [null, null, null, null, null] }
+              ],
+              ventanas: [4,3,3,2,2,1,1,2].map((v, i) => ({ columna: i+1, superior: null, inferior: null, valor: v })),
+              ornamentos: [0, 0, 0, 0]
+            },
+            {
+              nombre: "Heurística Táctica",
+              tablero: "amarillo",
+              puntos: 0,
+              cristal_roto: 1,
+              penalizacion_roto: 0,
+              vidriero: 0,
+              tiene_loseta_inicial: false,
+              tiras: [
+                { columna: 1, cara: "anv", retirada: false, patron: ["NARANJO", "AZUL", "AMARILLO", "ROSADO", "TRANSPARENTE"], piezas: [null, null, null, null, null] },
+                { columna: 2, cara: "anv", retirada: false, patron: ["AZUL", "TRANSPARENTE", "ROSADO", "AMARILLO", "NARANJO"], piezas: [null, null, null, null, null] },
+                { columna: 3, cara: "anv", retirada: false, patron: ["AMARILLO", "NARANJO", "AZUL", "TRANSPARENTE", "ROSADO"], piezas: [null, null, null, null, null] },
+                { columna: 4, cara: "anv", retirada: false, patron: ["ROSADO", "AMARILLO", "NARANJO", "AZUL", "TRANSPARENTE"], piezas: [null, null, null, null, null] },
+                { columna: 5, cara: "anv", retirada: false, patron: ["TRANSPARENTE", "ROSADO", "AMARILLO", "NARANJO", "AZUL"], piezas: [null, null, null, null, null] },
+                { columna: 6, cara: "anv", retirada: false, patron: ["NARANJO", "TRANSPARENTE", "ROSADO", "AMARILLO", "AZUL"], piezas: [null, null, null, null, null] },
+                { columna: 7, cara: "anv", retirada: false, patron: ["AZUL", "ROSADO", "NARANJO", "TRANSPARENTE", "AMARILLO"], piezas: [null, null, null, null, null] },
+                { columna: 8, cara: "anv", retirada: false, patron: ["AMARILLO", "AZUL", "TRANSPARENTE", "NARANJO", "ROSADO"], piezas: [null, null, null, null, null] }
+              ],
+              ventanas: [4,3,3,2,2,1,1,2].map((v, i) => ({ columna: i+1, superior: null, inferior: null, valor: v })),
+              ornamentos: [0, 0, 0, 0]
+            }
+          ],
+          accion: {
+            jugador_idx: 0,
+            jugador_nombre: "IA v4 (Lookahead K=6)",
+            opcion: "A",
+            origen: 1,
+            color: "AZUL",
+            tira: 1,
+            descripcion: "IA v4 (Lookahead K=6) toma 2 piezas azules de la fábrica 1. Van a la tira 1 (color de ronda y ventana de 4 pts).",
+            etiqueta_emergente: "Sinergia color de ronda + ventana de 4 pts"
+          },
+          final: null
+        }
+      ]
+    };
+
+    let matchData = DEMO_DATA;
+    let currentIdx = 0;
+    let timer = null;
+
+    const svg = d3.select("#boardSvg");
+    const slider = document.getElementById("turnSlider");
+    const turnCounter = document.getElementById("turnCounter");
+    const roundInfo = document.getElementById("roundInfo");
+    const narrativeText = document.getElementById("narrativeText");
+    const emergentBadge = document.getElementById("emergentBadge");
+    const btnPlay = document.getElementById("btnPlay");
+
+    function loadMatch(data) {
+      stopPlay();
+      matchData = data;
+      currentIdx = 0;
+      const total = data.frames.length - 1;
+      slider.max = total;
+      slider.value = 0;
+      document.getElementById("matchTitle").textContent = data.meta.titulo || "Azul: Vitrales de Sintra — RL";
+      document.getElementById("matchSubtitle").textContent =
+        `${data.meta.agente_principal} vs. ${data.meta.rival} · Semilla ${data.meta.seed} · Ganador: ${data.meta.ganador} (${data.meta.marcador_final[0]} - ${data.meta.marcador_final[1]})`;
+      renderFrame(0);
+    }
+
+    function drawTile(parent, x, y, size, colorKey, isPlaced = true, opacity = 1) {
+      const cfg = TILE_COLORS[colorKey] || { fill: "#334155", stroke: "#64748b", text: "#94a3b8", label: "?" };
+      const g = parent.append("g")
+        .attr("transform", `translate(${x}, ${y})`)
+        .attr("opacity", opacity);
+
+      g.append("rect")
+        .attr("width", size)
+        .attr("height", size)
+        .attr("rx", 5)
+        .attr("fill", isPlaced ? cfg.fill : "#0f172a")
+        .attr("stroke", cfg.stroke)
+        .attr("stroke-width", isPlaced ? 2 : 1.5)
+        .attr("stroke-dasharray", isPlaced ? null : "3,2");
+
+      if (isPlaced) {
+        g.append("polygon")
+          .attr("points", `3,3 ${size-3},3 ${size/2},${size/2}`)
+          .attr("fill", "rgba(255,255,255,0.22)");
+      }
+
+      g.append("text")
+        .attr("x", size / 2)
+        .attr("y", size / 2 + 4)
+        .attr("text-anchor", "middle")
+        .attr("font-size", size >= 26 ? "11px" : "9px")
+        .attr("font-weight", "700")
+        .attr("fill", isPlaced ? cfg.text : cfg.stroke)
+        .text(isPlaced ? cfg.label : cfg.label.toLowerCase());
+    }
+
+    function renderSparkline(parent, x, y, w, h, frameIdx) {
+      const slice = matchData.frames.slice(0, frameIdx + 1);
+      const maxScore = d3.max(matchData.frames, f => Math.max(f.jugadores[0].puntos, f.jugadores[1].puntos)) || 60;
+      const xScale = d3.scaleLinear().domain([0, Math.max(1, matchData.frames.length - 1)]).range([0, w]);
+      const yScale = d3.scaleLinear().domain([0, Math.max(10, maxScore + 5)]).range([h, 0]);
+
+      const g = parent.append("g").attr("transform", `translate(${x}, ${y})`);
+      g.append("rect").attr("width", w).attr("height", h).attr("rx", 8).attr("fill", "#0f172a").attr("stroke", "#334155");
+      g.append("text").attr("x", 10).attr("y", 16).attr("fill", "#94a3b8").attr("font-size", "11px").attr("font-weight", "700")
+        .text("EVOLUCIÓN DEL MARCADOR EN VIVO");
+
+      const line0 = d3.line().x(d => xScale(d.turno)).y(d => yScale(d.jugadores[0].puntos));
+      const line1 = d3.line().x(d => xScale(d.turno)).y(d => yScale(d.jugadores[1].puntos));
+
+      g.append("path").datum(slice).attr("fill", "none").attr("stroke", "#38bdf8").attr("stroke-width", 2.5).attr("d", line0);
+      g.append("path").datum(slice).attr("fill", "none").attr("stroke", "#fbbf24").attr("stroke-width", 2.5).attr("d", line1);
+
+      const last = slice[slice.length - 1];
+      g.append("circle").attr("cx", xScale(last.turno)).attr("cy", yScale(last.jugadores[0].puntos)).attr("r", 4.5).attr("fill", "#38bdf8");
+      g.append("circle").attr("cx", xScale(last.turno)).attr("cy", yScale(last.jugadores[1].puntos)).attr("r", 4.5).attr("fill", "#fbbf24");
+    }
+
+    function renderPlayerBoard(parent, p, pIdx, x, y, isTurn) {
+      const w = 660, h = 505;
+      const accent = pIdx === 0 ? "#38bdf8" : "#fbbf24";
+      const g = parent.append("g").attr("transform", `translate(${x}, ${y})`);
+
+      g.append("rect")
+        .attr("width", w).attr("height", h).attr("rx", 12)
+        .attr("fill", "#1e293b")
+        .attr("stroke", isTurn ? accent : "#334155")
+        .attr("stroke-width", isTurn ? 3 : 1.5);
+
+      // Encabezado jugador
+      g.append("text").attr("x", 18).attr("y", 30).attr("fill", accent).attr("font-size", "17px").attr("font-weight", "800")
+        .text(`${p.nombre} ${isTurn ? "◀ TURNO" : ""}`);
+      g.append("text").attr("x", 18).attr("y", 49).attr("fill", "#94a3b8").attr("font-size", "12px")
+        .text(`Tablero: ${p.tablero.toUpperCase()} · Loseta inicial: ${p.tiene_loseta_inicial ? "SÍ (1°)" : "No"}`);
+
+      // Caja de puntaje
+      g.append("rect").attr("x", w - 135).attr("y", 12).attr("width", 118).attr("height", 44).attr("rx", 8)
+        .attr("fill", "#0f172a").attr("stroke", accent);
+      g.append("text").attr("x", w - 76).attr("y", 39).attr("text-anchor", "middle").attr("fill", "#fff").attr("font-size", "22px").attr("font-weight", "800")
+        .text(`${p.puntos} pts`);
+
+      // 8 Columnas: Vidriero + Tiras + Ventanas
+      const colStartX = 28;
+      const colStep = 76;
+
+      p.tiras.forEach((tira, cIdx) => {
+        const cx = colStartX + cIdx * colStep;
+
+        // Marcador Vidriero
+        if (p.vidriero === cIdx) {
+          g.append("rect").attr("x", cx + 10).attr("y", 64).attr("width", 36).attr("height", 22).attr("rx", 6)
+            .attr("fill", "#10b981");
+          g.append("text").attr("x", cx + 28).attr("y", 79).attr("text-anchor", "middle").attr("fill", "#064e3b").attr("font-size", "11px").attr("font-weight", "900")
+            .text("V #" + (cIdx + 1));
+        } else {
+          g.append("text").attr("x", cx + 28).attr("y", 79).attr("text-anchor", "middle").attr("fill", "#64748b").attr("font-size", "11px")
+            .text(`Col ${cIdx + 1}`);
+        }
+
+        // Tira de patrón (5 espacios)
+        const stripY = 92;
+        g.append("rect").attr("x", cx + 6).attr("y", stripY).attr("width", 44).attr("height", 184).attr("rx", 7)
+          .attr("fill", tira.retirada ? "rgba(15,23,42,0.4)" : "#0f172a")
+          .attr("stroke", tira.retirada ? "#334155" : "#475569")
+          .attr("stroke-dasharray", tira.retirada ? "4,3" : null);
+
+        if (tira.retirada) {
+          g.append("text").attr("x", cx + 28).attr("y", stripY + 95).attr("text-anchor", "middle").attr("fill", "#475569").attr("font-size", "11px")
+            .text("RETIRADA");
+        } else {
+          for (let r = 0; r < 5; r++) {
+            const filled = tira.piezas[r];
+            const pat = tira.patron[r];
+            drawTile(g, cx + 13, stripY + 8 + r * 34, 30, filled || pat, Boolean(filled));
+          }
+        }
+
+        // Ventana (Superior e Inferior + Valor)
+        const win = p.ventanas[cIdx];
+        const winY = 288;
+        g.append("rect").attr("x", cx + 6).attr("y", winY).attr("width", 44).attr("height", 92).attr("rx", 7)
+          .attr("fill", "#0b1120").attr("stroke", "#475569");
+        drawTile(g, cx + 14, winY + 7, 28, win.superior, Boolean(win.superior), win.superior ? 1 : 0.25);
+        drawTile(g, cx + 14, winY + 41, 28, win.inferior, Boolean(win.inferior), win.inferior ? 1 : 0.25);
+        g.append("text").attr("x", cx + 28).attr("y", winY + 84).attr("text-anchor", "middle").attr("fill", "#cbd5e1").attr("font-size", "11px").attr("font-weight", "700")
+          .text(`+${win.valor} pts`);
+      });
+
+      // Ornamentos (4 grupos de 2 ventanas)
+      const ornY = 394;
+      g.append("text").attr("x", 22).attr("y", ornY + 14).attr("fill", "#94a3b8").attr("font-size", "11px").attr("font-weight", "700")
+        .text("ORNAMENTOS:");
+      p.ornamentos.forEach((cnt, k) => {
+        const ox = 125 + k * 135;
+        const ptsMap = [0, 0, 3, 6, 10];
+        g.append("rect").attr("x", ox).attr("y", ornY - 2).attr("width", 118).attr("height", 24).attr("rx", 6)
+          .attr("fill", cnt >= 2 ? "rgba(52,211,153,0.16)" : "#0f172a")
+          .attr("stroke", cnt >= 2 ? "#34d399" : "#334155");
+        g.append("text").attr("x", ox + 59).attr("y", ornY + 14).attr("text-anchor", "middle").attr("fill", cnt >= 2 ? "#34d399" : "#94a3b8").attr("font-size", "11px").attr("font-weight", "700")
+          .text(`Orn ${k+1}: ${cnt}/4 (+${ptsMap[cnt]}p)`);
+      });
+
+      // Track de Cristal Roto (Casillas 1 a 10)
+      const brkY = 434;
+      g.append("text").attr("x", 22).attr("y", brkY + 14).attr("fill", "#fca5a5").attr("font-size", "11px").attr("font-weight", "700")
+        .text("CRISTAL ROTO:");
+      BROKEN_TRACK.forEach((pen, idx) => {
+        const bx = 122 + idx * 52;
+        const active = (idx + 1) === p.cristal_roto;
+        g.append("rect").attr("x", bx).attr("y", brkY - 4).attr("width", 46).attr("height", 36).attr("rx", 6)
+          .attr("fill", active ? "#dc2626" : "#0f172a")
+          .attr("stroke", active ? "#fca5a5" : "#334155")
+          .attr("stroke-width", active ? 2.5 : 1);
+        g.append("text").attr("x", bx + 23).attr("y", brkY + 11).attr("text-anchor", "middle").attr("fill", "#94a3b8").attr("font-size", "9px")
+          .text(`#${idx + 1}`);
+        g.append("text").attr("x", bx + 23).attr("y", brkY + 25).attr("text-anchor", "middle").attr("fill", active ? "#fff" : "#f87171").attr("font-size", "11px").attr("font-weight", "700")
+          .text(pen === 0 ? "0" : pen);
+      });
+    }
+
+    function renderFrame(idx) {
+      const f = matchData.frames[idx];
+      const total = matchData.frames.length - 1;
+      slider.value = idx;
+      turnCounter.textContent = `Turno ${f.turno} / ${total}`;
+      roundInfo.textContent = `Ronda ${f.ronda} / 6 · Bolsa: ${f.bolsa_count} · Torre: ${f.torre_count}`;
+
+      if (f.final) {
+        narrativeText.innerHTML = `<strong>🏁 PARTIDA FINALIZADA:</strong> ${f.final.resumen}`;
+        emergentBadge.innerHTML = `<span class="emergent-tag good">🏆 Ganador: ${f.final.ganador}</span>`;
+      } else if (f.accion) {
+        narrativeText.textContent = f.accion.descripcion;
+        if (f.accion.etiqueta_emergente) {
+          const isWarn = f.accion.etiqueta_emergente.includes("Sobrecarga");
+          emergentBadge.innerHTML = `<span class="emergent-tag ${isWarn ? 'warn' : 'good'}">✨ ${f.accion.etiqueta_emergente}</span>`;
+        } else {
+          emergentBadge.innerHTML = "";
+        }
+      } else {
+        narrativeText.textContent = "Tablero inicial listo. Presiona Reproducir o Siguiente para avanzar turno a turno.";
+        emergentBadge.innerHTML = "";
+      }
+
+      svg.selectAll("*").remove();
+
+      // 1. Marcador de 6 Rondas (arriba izquierda)
+      const roundGroup = svg.append("g").attr("transform", "translate(24, 14)");
+      roundGroup.append("rect").attr("width", 420).attr("height", 74).attr("rx", 10).attr("fill", "#1e293b").attr("stroke", "#334155");
+      roundGroup.append("text").attr("x", 14).attr("y", 20).attr("fill", "#94a3b8").attr("font-size", "11px").attr("font-weight", "700")
+        .text("MARCADOR DE RONDAS (COLOR DE BONIFICACIÓN)");
+      const romans = ["I", "II", "III", "IV", "V", "VI"];
+      f.marcador_ronda.forEach((col, rIdx) => {
+        const rx = 18 + rIdx * 66;
+        const isCurrent = (rIdx + 1) === f.ronda;
+        roundGroup.append("text").attr("x", rx + 15).attr("y", 36).attr("text-anchor", "middle")
+          .attr("fill", isCurrent ? "#38bdf8" : "#64748b").attr("font-size", "11px").attr("font-weight", "800")
+          .text(romans[rIdx]);
+        if (col) {
+          drawTile(roundGroup, rx, 40, 28, col, true, isCurrent ? 1 : 0.65);
+        } else {
+          roundGroup.append("rect").attr("x", rx).attr("y", 40).attr("width", 28).attr("height", 28).attr("rx", 5)
+            .attr("fill", "#0f172a").attr("stroke", "#334155");
+        }
+      });
+
+      // 2. Evolución del puntaje en vivo (arriba derecha)
+      renderSparkline(svg, 956, 14, 420, 74, idx);
+
+      // 3. Zona Central: 5 Fábricas + Centro de la mesa
+      const tableGroup = svg.append("g").attr("transform", "translate(24, 102)");
+      tableGroup.append("rect").attr("width", 1352).attr("height", 148).attr("rx", 12).attr("fill", "rgba(30,41,59,0.75)").attr("stroke", "#334155");
+
+      f.fabricas.forEach((tiles, fIdx) => {
+        const fx = 28 + fIdx * 185;
+        const fy = 16;
+        const fg = tableGroup.append("g").attr("transform", `translate(${fx}, ${fy})`);
+        fg.append("rect").attr("width", 160).attr("height", 116).attr("rx", 12).attr("fill", "#0f172a").attr("stroke", "#475569");
+        fg.append("text").attr("x", 80).attr("y", 20).attr("text-anchor", "middle").attr("fill", "#94a3b8").attr("font-size", "11px").attr("font-weight", "700")
+          .text(`FÁBRICA ${fIdx + 1}`);
+        if (tiles.length === 0) {
+          fg.append("text").attr("x", 80).attr("y", 68).attr("text-anchor", "middle").attr("fill", "#475569").attr("font-size", "12px")
+            .text("Vacía");
+        } else {
+          tiles.forEach((c, tIdx) => {
+            const tx = 44 + (tIdx % 2) * 38;
+            const ty = 30 + Math.floor(tIdx / 2) * 38;
+            drawTile(fg, tx, ty, 32, c, true);
+          });
+        }
+      });
+
+      // Centro de la mesa
+      const cg = tableGroup.append("g").attr("transform", "translate(965, 16)");
+      cg.append("rect").attr("width", 360).attr("height", 116).attr("rx", 12).attr("fill", "#0f172a").attr("stroke", "#38bdf8").attr("stroke-dasharray", "5,3");
+      cg.append("text").attr("x", 180).attr("y", 20).attr("text-anchor", "middle").attr("fill", "#38bdf8").attr("font-size", "11px").attr("font-weight", "700")
+        .text(`CENTRO DE LA MESA (${f.centro.piezas.length} fichas)`);
+
+      let offset = 0;
+      if (f.centro.tiene_loseta_inicial) {
+        cg.append("rect").attr("x", 16).attr("y", 30).attr("width", 30).attr("height", 30).attr("rx", 6)
+          .attr("fill", "#f8fafc").attr("stroke", "#38bdf8").attr("stroke-width", 2);
+        cg.append("text").attr("x", 31).attr("y", 49).attr("text-anchor", "middle").attr("fill", "#0f172a").attr("font-size", "11px").attr("font-weight", "900")
+          .text("1°");
+        offset = 1;
+      }
+      f.centro.piezas.slice(0, 19).forEach((c, i) => {
+        const slot = i + offset;
+        const tx = 16 + (slot % 10) * 33;
+        const ty = 30 + Math.floor(slot / 10) * 36;
+        drawTile(cg, tx, ty, 28, c, true);
+      });
+
+      // 4. Tableros de ambos jugadores
+      renderPlayerBoard(svg, f.jugadores[0], 0, 24, 266, f.jugador_activo === 0 && !f.final);
+      renderPlayerBoard(svg, f.jugadores[1], 1, 716, 266, f.jugador_activo === 1 && !f.final);
+    }
+
+    function stopPlay() {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+      btnPlay.textContent = "▶ Reproducir";
+    }
+
+    function togglePlay() {
+      if (timer) {
+        stopPlay();
+        return;
+      }
+      if (currentIdx >= matchData.frames.length - 1) currentIdx = 0;
+      btnPlay.textContent = "⏸ Pausar";
+      const speed = Number(document.getElementById("speedSelect").value);
+      timer = setInterval(() => {
+        if (currentIdx < matchData.frames.length - 1) {
+          currentIdx++;
+          renderFrame(currentIdx);
+        } else {
+          stopPlay();
+        }
+      }, speed);
+    }
+
+    document.getElementById("btnPlay").addEventListener("click", togglePlay);
+    document.getElementById("btnStart").addEventListener("click", () => { stopPlay(); currentIdx = 0; renderFrame(0); });
+    document.getElementById("btnPrev").addEventListener("click", () => {
+      stopPlay();
+      if (currentIdx > 0) renderFrame(--currentIdx);
+    });
+    document.getElementById("btnNext").addEventListener("click", () => {
+      stopPlay();
+      if (currentIdx < matchData.frames.length - 1) renderFrame(++currentIdx);
+    });
+    slider.addEventListener("input", (e) => {
+      stopPlay();
+      currentIdx = Number(e.target.value);
+      renderFrame(currentIdx);
+    });
+    document.getElementById("speedSelect").addEventListener("change", () => {
+      if (timer) { stopPlay(); togglePlay(); }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.code === "Space") { e.preventDefault(); togglePlay(); }
+      if (e.code === "ArrowLeft") { stopPlay(); if (currentIdx > 0) renderFrame(--currentIdx); }
+      if (e.code === "ArrowRight") { stopPlay(); if (currentIdx < matchData.frames.length - 1) renderFrame(++currentIdx); }
+    });
+
+    function handleFile(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const parsed = JSON.parse(ev.target.result);
+          if (!parsed.frames || !Array.isArray(parsed.frames)) {
+            alert("El archivo JSON no tiene el formato esperado de partida_historial.json.");
+            return;
+          }
+          loadMatch(parsed);
+        } catch (err) {
+          alert("Error leyendo el JSON: " + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    document.getElementById("jsonInput").addEventListener("change", (e) => handleFile(e.target.files[0]));
+
+    const overlay = document.getElementById("dropOverlay");
+    window.addEventListener("dragover", (e) => { e.preventDefault(); overlay.style.display = "flex"; });
+    window.addEventListener("dragleave", (e) => { if (e.target === overlay) overlay.style.display = "none"; });
+    window.addEventListener("drop", (e) => {
+      e.preventDefault();
+      overlay.style.display = "none";
+      handleFile(e.dataTransfer.files[0]);
+    });
+
+    loadMatch(DEMO_DATA);
+  </script>
+</body>
+</html>

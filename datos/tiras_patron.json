@@ -1,0 +1,45 @@
+{
+  "nota": "Transcrito de las capturas de Tabletop Simulator. Cada tira trae sus dos caras, con los 5 espacios de arriba hacia abajo.",
+  "tableros": {
+    "rojo": [
+      {"anverso": ["TRANSPARENTE", "TRANSPARENTE", "AMARILLO", "AMARILLO", "AMARILLO"], "reverso": ["TRANSPARENTE", "TRANSPARENTE", "TRANSPARENTE", "TRANSPARENTE", "TRANSPARENTE"]},
+      {"anverso": ["ROSADO", "NARANJO", "NARANJO", "NARANJO", "NARANJO"], "reverso": ["NARANJO", "TRANSPARENTE", "TRANSPARENTE", "TRANSPARENTE", "TRANSPARENTE"]},
+      {"anverso": ["AZUL", "AZUL", "AZUL", "AZUL", "AZUL"], "reverso": ["AZUL", "AZUL", "ROSADO", "ROSADO", "ROSADO"]},
+      {"anverso": ["AMARILLO", "AMARILLO", "AMARILLO", "AMARILLO", "AMARILLO"], "reverso": ["AMARILLO", "AMARILLO", "NARANJO", "NARANJO", "NARANJO"]},
+      {"anverso": ["AZUL", "AMARILLO", "AMARILLO", "AMARILLO", "AMARILLO"], "reverso": ["TRANSPARENTE", "AZUL", "AZUL", "AZUL", "AZUL"]},
+      {"anverso": ["ROSADO", "ROSADO", "TRANSPARENTE", "TRANSPARENTE", "TRANSPARENTE"], "reverso": ["ROSADO", "ROSADO", "ROSADO", "ROSADO", "ROSADO"]},
+      {"anverso": ["NARANJO", "NARANJO", "NARANJO", "NARANJO", "NARANJO"], "reverso": ["NARANJO", "NARANJO", "AZUL", "AZUL", "AZUL"]},
+      {"anverso": ["AMARILLO", "ROSADO", "ROSADO", "ROSADO", "ROSADO"], "reverso": ["AZUL", "COMODIN", "TRANSPARENTE", "COMODIN", "NARANJO"]}
+    ],
+    "amarillo": [
+      {"anverso": ["NARANJO", "COMODIN", "ROSADO", "COMODIN", "AMARILLO"], "reverso": ["TRANSPARENTE", "AZUL", "AZUL", "AZUL", "AZUL"]},
+      {"anverso": ["AZUL", "AMARILLO", "AMARILLO", "AMARILLO", "AMARILLO"], "reverso": ["AMARILLO", "ROSADO", "ROSADO", "ROSADO", "ROSADO"]},
+      {"anverso": ["AZUL", "AZUL", "AZUL", "AZUL", "AZUL"], "reverso": ["AZUL", "AZUL", "ROSADO", "ROSADO", "ROSADO"]},
+      {"anverso": ["ROSADO", "NARANJO", "NARANJO", "NARANJO", "NARANJO"], "reverso": ["NARANJO", "TRANSPARENTE", "TRANSPARENTE", "TRANSPARENTE", "TRANSPARENTE"]},
+      {"anverso": ["AMARILLO", "AMARILLO", "AMARILLO", "AMARILLO", "AMARILLO"], "reverso": ["AMARILLO", "AMARILLO", "NARANJO", "NARANJO", "NARANJO"]},
+      {"anverso": ["TRANSPARENTE", "TRANSPARENTE", "TRANSPARENTE", "TRANSPARENTE", "TRANSPARENTE"], "reverso": ["TRANSPARENTE", "TRANSPARENTE", "AMARILLO", "AMARILLO", "AMARILLO"]},
+      {"anverso": ["ROSADO", "ROSADO", "TRANSPARENTE", "TRANSPARENTE", "TRANSPARENTE"], "reverso": ["ROSADO", "ROSADO", "ROSADO", "ROSADO", "ROSADO"]},
+      {"anverso": ["NARANJO", "NARANJO", "AZUL", "AZUL", "AZUL"], "reverso": ["NARANJO", "NARANJO", "NARANJO", "NARANJO", "NARANJO"]}
+    ],
+    "gris": [
+      {"anverso": ["ROSADO", "COMODIN", "AMARILLO", "COMODIN", "AZUL"], "reverso": ["NARANJO", "TRANSPARENTE", "TRANSPARENTE", "TRANSPARENTE", "TRANSPARENTE"]},
+      {"anverso": ["TRANSPARENTE", "AZUL", "AZUL", "AZUL", "AZUL"], "reverso": ["AZUL", "AMARILLO", "AMARILLO", "AMARILLO", "AMARILLO"]},
+      {"anverso": ["AMARILLO", "AMARILLO", "NARANJO", "NARANJO", "NARANJO"], "reverso": ["AMARILLO", "AMARILLO", "AMARILLO", "AMARILLO", "AMARILLO"]},
+      {"anverso": ["NARANJO", "NARANJO", "NARANJO", "NARANJO", "NARANJO"], "reverso": ["NARANJO", "NARANJO", "AZUL", "AZUL", "AZUL"]},
+      {"anverso": ["ROSADO", "NARANJO", "NARANJO", "NARANJO", "NARANJO"], "reverso": ["AMARILLO", "ROSADO", "ROSADO", "ROSADO", "ROSADO"]},
+      {"anverso": ["TRANSPARENTE", "TRANSPARENTE", "AMARILLO", "AMARILLO", "AMARILLO"], "reverso": ["TRANSPARENTE", "TRANSPARENTE", "TRANSPARENTE", "TRANSPARENTE", "TRANSPARENTE"]},
+      {"anverso": ["AZUL", "AZUL", "AZUL", "AZUL", "AZUL"], "reverso": ["AZUL", "AZUL", "ROSADO", "ROSADO", "ROSADO"]},
+      {"anverso": ["ROSADO", "ROSADO", "TRANSPARENTE", "TRANSPARENTE", "TRANSPARENTE"], "reverso": ["ROSADO", "ROSADO", "ROSADO", "ROSADO", "ROSADO"]}
+    ],
+    "azul": [
+      {"anverso": ["TRANSPARENTE", "COMODIN", "NARANJO", "COMODIN", "ROSADO"], "reverso": ["AZUL", "AMARILLO", "AMARILLO", "AMARILLO", "AMARILLO"]},
+      {"anverso": ["ROSADO", "ROSADO", "TRANSPARENTE", "TRANSPARENTE", "TRANSPARENTE"], "reverso": ["ROSADO", "ROSADO", "ROSADO", "ROSADO", "ROSADO"]},
+      {"anverso": ["TRANSPARENTE", "TRANSPARENTE", "TRANSPARENTE", "TRANSPARENTE", "TRANSPARENTE"], "reverso": ["TRANSPARENTE", "TRANSPARENTE", "AMARILLO", "AMARILLO", "AMARILLO"]},
+      {"anverso": ["TRANSPARENTE", "AZUL", "AZUL", "AZUL", "AZUL"], "reverso": ["NARANJO", "TRANSPARENTE", "TRANSPARENTE", "TRANSPARENTE", "TRANSPARENTE"]},
+      {"anverso": ["AZUL", "AZUL", "ROSADO", "ROSADO", "ROSADO"], "reverso": ["AZUL", "AZUL", "AZUL", "AZUL", "AZUL"]},
+      {"anverso": ["ROSADO", "NARANJO", "NARANJO", "NARANJO", "NARANJO"], "reverso": ["AMARILLO", "ROSADO", "ROSADO", "ROSADO", "ROSADO"]},
+      {"anverso": ["AMARILLO", "AMARILLO", "AMARILLO", "AMARILLO", "AMARILLO"], "reverso": ["AMARILLO", "AMARILLO", "NARANJO", "NARANJO", "NARANJO"]},
+      {"anverso": ["NARANJO", "NARANJO", "NARANJO", "NARANJO", "NARANJO"], "reverso": ["NARANJO", "NARANJO", "AZUL", "AZUL", "AZUL"]}
+    ]
+  }
+}
