@@ -1,0 +1,4 @@
+| experimento | w | n_ag | max_manos | criterio | modo | umbral | largo_agentes | cadena | criterio_mejor | mejor_agente | agente_mas_fuerte_liga | fuerza | fuerza_vs_agentes | fuerza_vs_uniforme | bb_vs_uniforme | bb_vs_anterior | accion_dominante | pct_retiro | pct_igualar | pct_subidas | pct_allin | archivo |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| prueba_mixta | 0.500 | 3 | 3 | racha | puntual | 0.625 | 2 | Agente 3 > Agente 2 > Uniforme | cabeza de cadena | 3 | 3 | 0.585 | 0.585 | 0.893 | 1.884 | 3.873 | Igualar/Pasar | 0.026 | 0.393 | 0.582 | 0.185 | prueba_mixta/agentes/agente_03.npz |
+| prueba_mixta | 0.500 | 3 | 3 | racha | conservador | 0.575 | 2 | Agente 3 > Agente 2 > Uniforme | cabeza de cadena | 3 | 3 | 0.585 | 0.585 | 0.893 | 1.884 | 3.873 | Igualar/Pasar | 0.026 | 0.393 | 0.582 | 0.185 | prueba_mixta/agentes/agente_03.npz |

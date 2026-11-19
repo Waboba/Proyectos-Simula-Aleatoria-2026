@@ -1,0 +1,41 @@
+iteracion,criterio,k,conservador,umbral,largo_agentes,largo_nodos,cadena,caminos2,caminos2_cerrados,frac_transitiva
+1,racha,3,0,0.6,1,2,Agente 1 > Uniforme,0,0,nan
+1,racha,3,0,0.7,1,2,Agente 1 > Uniforme,0,0,nan
+1,racha,3,0,0.8,1,2,Agente 1 > Uniforme,0,0,nan
+1,racha,3,0,0.9,1,2,Agente 1 > Uniforme,0,0,nan
+1,racha,3,1,0.6,1,2,Agente 1 > Uniforme,0,0,nan
+1,racha,3,1,0.7,1,2,Agente 1 > Uniforme,0,0,nan
+1,racha,3,1,0.8,1,2,Agente 1 > Uniforme,0,0,nan
+1,racha,3,1,0.9,1,2,Agente 1 > Uniforme,0,0,nan
+2,racha,3,0,0.6,1,2,Agente 1 > Uniforme,0,0,nan
+2,racha,3,0,0.7,1,2,Agente 1 > Uniforme,0,0,nan
+2,racha,3,0,0.8,1,2,Agente 1 > Uniforme,0,0,nan
+2,racha,3,0,0.9,1,2,Agente 1 > Uniforme,0,0,nan
+2,racha,3,1,0.6,1,2,Agente 1 > Uniforme,0,0,nan
+2,racha,3,1,0.7,1,2,Agente 1 > Uniforme,0,0,nan
+2,racha,3,1,0.8,1,2,Agente 1 > Uniforme,0,0,nan
+2,racha,3,1,0.9,1,2,Agente 1 > Uniforme,0,0,nan
+3,racha,3,0,0.6,2,3,Agente 3 > Agente 2 > Uniforme,1,1,1.0
+3,racha,3,0,0.7,1,2,Agente 1 > Uniforme,0,0,nan
+3,racha,3,0,0.8,1,2,Agente 1 > Uniforme,0,0,nan
+3,racha,3,0,0.9,1,2,Agente 1 > Uniforme,0,0,nan
+3,racha,3,1,0.6,1,2,Agente 1 > Uniforme,0,0,nan
+3,racha,3,1,0.7,1,2,Agente 1 > Uniforme,0,0,nan
+3,racha,3,1,0.8,1,2,Agente 1 > Uniforme,0,0,nan
+3,racha,3,1,0.9,1,2,Agente 1 > Uniforme,0,0,nan
+4,racha,3,0,0.6,2,3,Agente 3 > Agente 2 > Uniforme,3,2,0.6666666666666666
+4,racha,3,0,0.7,2,3,Agente 4 > Agente 3 > Uniforme,1,1,1.0
+4,racha,3,0,0.8,1,2,Agente 1 > Uniforme,0,0,nan
+4,racha,3,0,0.9,1,2,Agente 1 > Uniforme,0,0,nan
+4,racha,3,1,0.6,2,3,Agente 4 > Agente 3 > Uniforme,1,1,1.0
+4,racha,3,1,0.7,1,2,Agente 1 > Uniforme,0,0,nan
+4,racha,3,1,0.8,1,2,Agente 1 > Uniforme,0,0,nan
+4,racha,3,1,0.9,1,2,Agente 1 > Uniforme,0,0,nan
+5,racha,3,0,0.6,2,3,Agente 3 > Agente 2 > Uniforme,5,3,0.6
+5,racha,3,0,0.7,2,3,Agente 4 > Agente 3 > Uniforme,1,1,1.0
+5,racha,3,0,0.8,1,2,Agente 1 > Uniforme,0,0,nan
+5,racha,3,0,0.9,1,2,Agente 1 > Uniforme,0,0,nan
+5,racha,3,1,0.6,2,3,Agente 4 > Agente 3 > Uniforme,1,1,1.0
+5,racha,3,1,0.7,1,2,Agente 1 > Uniforme,0,0,nan
+5,racha,3,1,0.8,1,2,Agente 1 > Uniforme,0,0,nan
+5,racha,3,1,0.9,1,2,Agente 1 > Uniforme,0,0,nan
